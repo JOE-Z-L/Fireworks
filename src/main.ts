@@ -1,6 +1,6 @@
-import { Application, Assets, Sprite } from "pixi.js";
+import { Application, Assets, Sprite, Ticker } from "pixi.js";
 
-(async () => {
+(async (): Promise<void> => {
   // Create a new application
   const app = new Application();
 
@@ -8,7 +8,10 @@ import { Application, Assets, Sprite } from "pixi.js";
   await app.init({ background: "#1099bb", resizeTo: window });
 
   // Append the application canvas to the document body
-  document.getElementById("pixi-container").appendChild(app.canvas);
+  const container = document.getElementById("pixi-container");
+  if (container) {
+    container.appendChild(app.canvas);
+  }
 
   // Load the bunny texture
   const texture = await Assets.load("/assets/bunny.png");
@@ -26,7 +29,7 @@ import { Application, Assets, Sprite } from "pixi.js";
   app.stage.addChild(bunny);
 
   // Listen for animate update
-  app.ticker.add((time) => {
+  app.ticker.add((time: Ticker) => {
     // Just for fun, let's rotate mr rabbit a little.
     // * Delta is 1 if running at 100% performance *
     // * Creates frame-independent transformation *
