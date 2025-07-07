@@ -1,26 +1,19 @@
-
 import { Application, Text } from "pixi.js";
-import { loadFireWorksConfigs } from "@core/xmlLoader";
-import { Scheduler } from "@core/scheduler";
-import { FireworkDisplay } from "@fireworks/FireworkDisplay";
+import { loadFireWorkConfigs } from "./core/xmlLoader";
+// import { createCoordinatesRoot } from "./core/coordinateSystem";
 
-//TODO: add screen resolution
-/*// main.ts (snippet)
-const WIDTH  = 1024;
+const WIDTH = 1024;
 const HEIGHT = 768;
-
-await app.init({
-    width: WIDTH,
-    height: HEIGHT,
-    background: '#000',
-    resolution: devicePixelRatio,   // crisp on Hi-DPI
-});*/
-
 
 (async () => {
     // Initialize PIXI Application
     const app = new Application();
-    await app.init({background: '#000000', resizeTo: window});
+    await app.init({
+        width: WIDTH,
+        height: HEIGHT,
+        background: '#000',
+        resolution: devicePixelRatio,
+    });
 
     // Add canvas to DOM
     document.getElementById('pixi-container')?.appendChild(app.canvas);
@@ -43,5 +36,10 @@ await app.init({
 
     console.log('Fireworks application initialized');
 
-    // TODO: Implement fireworks loading and display
+    try {
+        const cfgs = await loadFireWorkConfigs('/fireworks.xml');
+        console.table(cfgs);
+    } catch (error) {
+        console.error('Failed to load fireworks:', error);
+    }
 })();

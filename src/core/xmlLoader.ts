@@ -26,10 +26,10 @@ export async function loadFireWorkConfigs(url:string): Promise<FireworkConfig[]>
     }
 
     const configs:FireworkConfig[] = [];
-    dom.querySelectorAll('FireworkDisplay > Firework'.forEach(node=>{
+    dom.querySelectorAll('FireworkDisplay > Firework').forEach(node=>{
         const cfg = readFirework(node);
         configs.push(cfg);
-    }))
+    });
 
     configs.sort((a, b) => a.begin - b.begin);
     return configs;
