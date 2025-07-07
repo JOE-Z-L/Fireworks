@@ -12,7 +12,7 @@ const GRAVITY = -800;          // px/s² (Y-up coordinate system)
 export class FountainFirework extends Firework {
     private emitTimer = 0;       // counts down to next emission
 
-    constructor(cfg: FireworkConfig) {
+    constructor(cfg: FireworkConfig, private readonly sparkTex: Texture) {
         super(cfg);
     }
 
@@ -50,10 +50,10 @@ export class FountainFirework extends Firework {
         });
 
         // Cull dead particles
-        const deadParticles = this.children.filter(child => 
+        const deadParticles = this.children.filter(child =>
             'isDead' in child && typeof child.isDead === 'function' && child.isDead()
         );
-        
+
         // Remove each dead particle individually
         deadParticles.forEach(child => {
             this.removeChild(child);
@@ -65,8 +65,10 @@ export class FountainFirework extends Firework {
         const vx = (Math.random() * 2 - 1) * SPREAD;
         const vy = INITIAL_SPEED + Math.random() * 30;    // slight jitter
 
-        const p = new Particle(Texture.WHITE, this.cfg.colour, PARTICLE_LIFE, vx, vy);
+        const p = new Particle(this.sparkTex, this.cfg.colour, PARTICLE_LIFE, vx, vy);
         p.ay = GRAVITY;                                   // global downward pull
+        p.scale.set(1.8);                                 // 8 px texture → ~14 px spark
+        p.blendMode = 'add';                    // soft glow
         this.addChild(p);
     }
 }
