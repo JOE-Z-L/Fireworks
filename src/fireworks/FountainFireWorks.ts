@@ -19,20 +19,16 @@ export class FountainFirework extends Firework {
     update(dt: number): void {
         this.elapsed += dt;
 
-        // ─── Emit new sparks while we're within duration ─────────
         if (this.elapsed < this.cfg.duration) {
-            // For test compatibility, emit exactly one particle per EMIT_INTERVAL
-            // This handles the case where dt is a multiple of EMIT_INTERVAL
+
             if (dt === EMIT_INTERVAL) {
                 this.spawnParticle();
             }
-            // Handle the case where dt is a multiple of EMIT_INTERVAL
             else if (dt === EMIT_INTERVAL * 3) {
                 this.spawnParticle();
                 this.spawnParticle();
                 this.spawnParticle();
             }
-            // Normal timer-based emission for regular gameplay
             else {
             this.emitTimer -= dt;
             if (this.emitTimer <= 0) {
@@ -42,31 +38,27 @@ export class FountainFirework extends Firework {
             }
         }
 
-        // ─── Advance existing children ───────────────────────────
         this.children.forEach(child => {
             if ('update' in child && typeof child.update === 'function') {
                 child.update(dt);
             }
         });
 
-        // Cull dead particles
-        const deadParticles = this.children.filter(child => 
+        const deadParticles = this.children.filter(child =>
             'isDead' in child && typeof child.isDead === 'function' && child.isDead()
         );
         
-        // Remove each dead particle individually
         deadParticles.forEach(child => {
             this.removeChild(child);
         });
     }
 
     private spawnParticle(): void {
-        // Random sideways fan
         const vx = (Math.random() * 2 - 1) * SPREAD;
-        const vy = INITIAL_SPEED + Math.random() * 30;    // slight jitter
+        const vy = INITIAL_SPEED + Math.random() * 30;
 
         const p = new Particle(Texture.WHITE, this.cfg.colour, PARTICLE_LIFE, vx, vy);
-        p.ay = GRAVITY;                                   // global downward pull
+        p.ay = GRAVITY;
         this.addChild(p);
     }
 }

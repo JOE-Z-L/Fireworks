@@ -1,7 +1,6 @@
 import { Application, Text } from "pixi.js";
 import { loadFireWorkConfigs } from "./core/xmlLoader";
 import { ENV } from "./config/env";
-// import { createCoordinatesRoot } from "./core/coordinateSystem";
 
 (async () => {
     // Initialize PIXI Application
@@ -16,7 +15,6 @@ import { ENV } from "./config/env";
     // Add canvas to DOM
     document.getElementById('pixi-container')?.appendChild(app.canvas);
 
-    // Add welcome a message
     const message = new Text({
         text: 'fireworks Display\nLoading...',
         style: {
@@ -27,7 +25,6 @@ import { ENV } from "./config/env";
         }
     });
 
-    // Center the message
     message.anchor.set(0.5);
     message.position.set(app.screen.width / 2, app.screen.height / 2);
     app.stage.addChild(message);

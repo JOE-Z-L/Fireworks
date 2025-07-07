@@ -12,7 +12,6 @@ export class RocketFirework extends Firework {
     private exploded = false;
     private trailTimer = 0;
 
-    /** Small rocket body so the audience sees the ascent */
     private body = new Graphics()
         .circle(0, 0, 3)
         .fill(0xffffff);
@@ -28,42 +27,35 @@ export class RocketFirework extends Firework {
         const dtSec = dt / 1000;
 
         if (!this.exploded) {
-            // ─── Thrust phase ─────────────────────────────────────
             this.x += (this.cfg.velocity?.x ?? 0) * dtSec;
             this.y += (this.cfg.velocity?.y ?? 0) * dtSec;
 
-            // Trail particles
             this.trailTimer -= dt;
             if (this.trailTimer <= 0) {
                 this.spawnTrailSpark();
                 this.trailTimer += TRAIL_EMIT;
             }
 
-            // Time to explode?
             if (this.elapsed >= this.cfg.duration) {
                 this.explode();
             }
         }
 
-        // Update & cull debris
         this.children.forEach(child => {
             if ('update' in child && typeof child.update === 'function') {
                 child.update(dt);
             }
         });
 
-        // Find and remove dead particles
         const deadParticles = this.children.filter(child =>
             'isDead' in child && typeof child.isDead === 'function' && child.isDead()
         );
 
-        // Remove each dead particle individually
         deadParticles.forEach(child => {
             this.removeChild(child);
         });
     }
 
-    // ──────────────────────────────────────────────────────────
     private spawnTrailSpark() {
         const p = new Particle(Texture.WHITE, this.cfg.colour, 600, 0, -50);
         p.alpha = 0.5;           // dimmer than main burst

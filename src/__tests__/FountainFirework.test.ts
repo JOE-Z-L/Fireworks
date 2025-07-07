@@ -4,7 +4,7 @@ import type { FireworkConfig } from "../core/xmlLoader";
 
 describe("FountainFirework", () => {
   let fw: FountainFirework;
-  const EMIT_INTERVAL = 30; // Same as in FountainFireWorks.ts
+  const EMIT_INTERVAL = 30;
 
   beforeEach(() => {
     const cfg = {
