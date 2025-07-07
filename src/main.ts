@@ -1,7 +1,8 @@
 import { Application, Text } from "pixi.js";
 import { loadFireWorkConfigs } from "./core/xmlLoader";
 import { ENV } from "./config/env";
-// import { createCoordinatesRoot } from "./core/coordinateSystem";
+import {createCoordinatesRoot} from "./core/coordinatesSystem";
+import { Scheduler } from "./core/scheduler";
 
 (async () => {
     // Initialize PIXI Application
@@ -35,8 +36,20 @@ import { ENV } from "./config/env";
     console.log('fireworks application initialized');
 
     try {
-        const cfgs = await loadFireWorkConfigs('/fireworks.xml');
+        // Create world coordinate system
+        const world = createCoordinatesRoot(app.screen.width, app.screen.height);
+        app.stage.addChild(world);
+
+        // Load firework configurations
+        const cfgs = await loadFireWorkConfigs(ENV.ASSETS.FIREWORKS_XML);
         console.table(cfgs);
+
+        // Remove loading message
+        app.stage.removeChild(message);
+
+        // Initialize scheduler and start animation
+        const scheduler = new Scheduler(cfgs, world);
+        app.ticker.add(({ deltaMS }) => scheduler.update(deltaMS));
     } catch (error) {
         console.error('Failed to load fireworks:', error);
     }
