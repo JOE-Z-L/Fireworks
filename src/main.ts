@@ -18,7 +18,7 @@ import { ENV } from "./config/env";
 
     // Add welcome a message
     const message = new Text({
-        text: 'Fireworks Display\nLoading...',
+        text: 'fireworks Display\nLoading...',
         style: {
             fontFamily: 'Arial',
             fontSize: 36,
@@ -32,7 +32,7 @@ import { ENV } from "./config/env";
     message.position.set(app.screen.width / 2, app.screen.height / 2);
     app.stage.addChild(message);
 
-    console.log('Fireworks application initialized');
+    console.log('fireworks application initialized');
 
     try {
         const cfgs = await loadFireWorkConfigs('/fireworks.xml');
