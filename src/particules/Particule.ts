@@ -1,12 +1,5 @@
 import { Sprite, Texture } from 'pixi.js';
 
-//NOTE: i did not made this calculation
-/*
-* “I followed PixiJS’s own Render-Loop and Ticker docs.
-* They recommend multiplying your per-second velocity by deltaMS / 1000 to get frame-independent
-*  motion.
-* */
-
 export class Particle extends Sprite {
     vx: number;
     vy: number;

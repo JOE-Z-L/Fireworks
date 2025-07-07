@@ -14,6 +14,14 @@ export abstract class Firework extends Container {
 
     /** True when no visible effect remains */
     isFinished(): boolean {
-        return this.children.every(c => (c as any).isDead?.());
+        // Skip the rocket body in the check (which doesn't have isDead)
+        return this.elapsed >= this.cfg.duration &&
+               this.children.every(c => {
+                   // Skip elements without isDead method
+                   if (!('isDead' in c) || typeof (c as any).isDead !== 'function') {
+                       return true;
+                   }
+                   return (c as any).isDead();
+               });
     }
 }
