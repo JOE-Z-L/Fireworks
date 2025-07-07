@@ -1,4 +1,4 @@
-import { Graphics, Texture } from 'pixi.js';
+import { Sprite, Texture } from 'pixi.js';
 import { Firework } from './FireWork';
 import { Particle } from '../particules/Particule';
 import type { FireworkConfig } from '../core/xmlLoader';
@@ -11,14 +11,18 @@ const GRAVITY = -800;          // shared with fountain
 export class RocketFirework extends Firework {
     private exploded = false;
     private trailTimer = 0;
+    private body: Sprite;
 
-    /** Small rocket body so the audience sees the ascent */
-    private body = new Graphics()
-        .circle(0, 0, 3)
-        .fill(0xffffff);
-
-    constructor(cfg: FireworkConfig) {
+    constructor(
+        cfg: FireworkConfig,
+        bodyTex: Texture,
+        private readonly sparkTex: Texture
+    ) {
         super(cfg);
+
+        this.body = new Sprite(bodyTex);
+        this.body.anchor.set(0.5);
+        this.body.scale.set(0.4);
         this.addChild(this.body);
     }
 
@@ -63,10 +67,11 @@ export class RocketFirework extends Firework {
         });
     }
 
-    // ──────────────────────────────────────────────────────────
     private spawnTrailSpark() {
-        const p = new Particle(Texture.WHITE, this.cfg.colour, 600, 0, -50);
-        p.alpha = 0.5;           // dimmer than main burst
+        const p = new Particle(this.sparkTex, this.cfg.colour, 500, 0, -40);
+        p.scale.set(1.2);
+        p.alpha = 0.5;
+        p.blendMode = 'add';
         this.addChild(p);
     }
 
@@ -80,8 +85,10 @@ export class RocketFirework extends Firework {
             const vx = Math.cos(angle) * EXPLOSION_SPEED;
             const vy = Math.sin(angle) * EXPLOSION_SPEED;
 
-            const p = new Particle(Texture.WHITE, this.cfg.colour, 1200, vx, vy);
-            p.ay = GRAVITY;        // debris caem
+            const p = new Particle(this.sparkTex, this.cfg.colour, 1200, vx, vy);
+            p.scale.set(1.6);
+            p.blendMode = 'add';
+            p.ay = GRAVITY;
             this.addChild(p);
         }
     }

@@ -1,11 +1,16 @@
-import { Application, Text } from "pixi.js";
+import { Application, Text , Assets } from "pixi.js";
 import { loadFireWorkConfigs } from "./core/xmlLoader";
 import { ENV } from "./config/env";
 import {createCoordinatesRoot} from "./core/coordinatesSystem";
 import { Scheduler } from "./core/scheduler";
 
+const textures = await Assets.load({
+    particle : '/assets/particle.png',
+    rocket   : '/assets/rocket.png',
+    fountain : '/assets/fountain.png',
+});
+
 (async () => {
-    // Initialize PIXI Application
     const app = new Application();
     await app.init({
         width: ENV.DISPLAY.WIDTH,
@@ -13,6 +18,7 @@ import { Scheduler } from "./core/scheduler";
         background: ENV.DISPLAY.BACKGROUND_COLOR,
         resolution: devicePixelRatio,
     });
+    console.log('textures loaded', textures);
 
     // Add canvas to DOM
     document.getElementById('pixi-container')?.appendChild(app.canvas);
@@ -28,7 +34,6 @@ import { Scheduler } from "./core/scheduler";
         }
     });
 
-    // Center the message
     message.anchor.set(0.5);
     message.position.set(app.screen.width / 2, app.screen.height / 2);
     app.stage.addChild(message);
@@ -36,19 +41,16 @@ import { Scheduler } from "./core/scheduler";
     console.log('fireworks application initialized');
 
     try {
-        // Create world coordinate system
         const world = createCoordinatesRoot(app.screen.width, app.screen.height);
         app.stage.addChild(world);
 
-        // Load firework configurations
         const cfgs = await loadFireWorkConfigs(ENV.ASSETS.FIREWORKS_XML);
         console.table(cfgs);
 
-        // Remove loading message
         app.stage.removeChild(message);
 
         // Initialize scheduler and start animation
-        const scheduler = new Scheduler(cfgs, world);
+        const scheduler = new Scheduler(cfgs, world, textures);
         app.ticker.add(({ deltaMS }) => scheduler.update(deltaMS));
     } catch (error) {
         console.error('Failed to load fireworks:', error);
