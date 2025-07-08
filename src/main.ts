@@ -6,6 +6,7 @@ import { Scheduler } from "./core/scheduler";
 import type { TextureSet } from "./fireworks";
 import {Pane} from "tweakpane";
 import { Settings, resetSettings } from "./config/runtimeSettings";
+import { enableResponsiveCanvas } from "./core/canvasResize";
 
 // Try a different approach to asset loading
 let textures;
@@ -19,9 +20,9 @@ try {
 
   // Check if assets exist before trying to load them
   const assetsExist = await Promise.all([
-    fetch('/assets/particle.png').then(r => r.ok).catch(() => false),
-    fetch('/assets/rocket.png').then(r => r.ok).catch(() => false),
-    fetch('/assets/fountain.png').then(r => r.ok).catch(() => false)
+    fetch('/assets1/particle.png').then(r => r.ok).catch(() => false),
+    fetch('/assets1/rocket.png').then(r => r.ok).catch(() => false),
+    fetch('/assets1/fountain.png').then(r => r.ok).catch(() => false)
   ]);
 
   if (assetsExist.every(exists => exists)) {
@@ -79,9 +80,14 @@ try {
 
     try {
         const screen = createCoordinatesRoot(app.screen.width, app.screen.height);
-        const ZOOM =1;
-        screen.scale.set(ZOOM,-ZOOM);
+        // Initial scale is set but will be updated by ticker
+        screen.scale.set(Settings.viewportZoom, -Settings.viewportZoom);
         app.stage.addChild(screen);
+
+        // Enable responsive canvas
+        const logicalW = ENV.DISPLAY.WIDTH;   // 1024
+        const logicalH = ENV.DISPLAY.HEIGHT;  // 768
+        enableResponsiveCanvas(app, screen, logicalW, logicalH);
 
         const cfgs = await loadFireWorkConfigs(ENV.ASSETS.FIREWORKS_XML);
         console.table(cfgs);
@@ -96,7 +102,12 @@ try {
 
         // Initialize scheduler and start animation
         const scheduler = new Scheduler(cfgs, screen, textureSet);
-        app.ticker.add(({ deltaMS }) => scheduler.update(deltaMS));
+
+        // Update ticker to include zoom adjustment
+        app.ticker.add(({ deltaMS }) => {
+            screen.scale.set(Settings.viewportZoom, -Settings.viewportZoom);
+            scheduler.update(deltaMS);
+        });
     } catch (error) {
         console.error('Failed to load fireworks:', error);
     }
@@ -108,11 +119,13 @@ try {
     pane.addBinding(Settings, 'fountainSpeed',  { min: 100, max: 500, step: 10 });
     pane.addBinding(Settings, 'fountainSpread', { min: 20,  max: 500, step: 5  });
     pane.addBinding(Settings, 'explosionSpeed', { min: 150, max: 1000, step: 10 });
-    pane.addBinding(Settings, 'gravity',        { min: -1200, max: -200, step: 50 });
-    pane.addBinding(Settings, 'emitInterval',   { min: 10, max: 60,  step: 1  });
+    pane.addBinding(Settings, 'gravity',        { min: -800, max: -200, step: 50 });
+    pane.addBinding(Settings, 'emitInterval',   { min: 0.1, max: 10,  step: 1  });
+    pane.addBinding(Settings, 'viewportZoom',   { min: 0.5, max: 3, step: 0.1 });
 
     const resetBtn = pane.addButton({
         title: 'Reset to Defaults',
+        expandable: false,
     });
 
     resetBtn.on('click', () => {
