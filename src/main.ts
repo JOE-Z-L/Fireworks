@@ -43,7 +43,6 @@ try {
   console.log('Using textures:', textures);
 } catch (error) {
   console.error('Error in texture loading process:', error);
-  // Already have fallback textures
 }
 
 (async () => {
@@ -77,8 +76,10 @@ try {
     console.log('fireworks application initialized');
 
     try {
-        const world = createCoordinatesRoot(app.screen.width, app.screen.height);
-        app.stage.addChild(world);
+        const screen = createCoordinatesRoot(app.screen.width, app.screen.height);
+        const ZOOM =1;
+        screen.scale.set(ZOOM,-ZOOM);
+        app.stage.addChild(screen);
 
         const cfgs = await loadFireWorkConfigs(ENV.ASSETS.FIREWORKS_XML);
         console.table(cfgs);
@@ -92,7 +93,7 @@ try {
         };
 
         // Initialize scheduler and start animation
-        const scheduler = new Scheduler(cfgs, world, textureSet);
+        const scheduler = new Scheduler(cfgs, screen, textureSet);
         app.ticker.add(({ deltaMS }) => scheduler.update(deltaMS));
     } catch (error) {
         console.error('Failed to load fireworks:', error);
