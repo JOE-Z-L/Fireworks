@@ -5,7 +5,7 @@ import type { FireworkConfig } from '../core/xmlLoader';
 
 const TRAIL_EMIT = 50;         // ms between trail sparks
 const EXPLOSION_PARTS = 60;    // number of explosion sparks
-const EXPLOSION_SPEED = 300;   // px/s initial debris velocity
+const EXPLOSION_SPEED = 240;   // px/s initial debris velocity
 const GRAVITY = -800;          // shared with fountain
 
 export class RocketFirework extends Firework {
@@ -69,7 +69,7 @@ export class RocketFirework extends Firework {
 
     private spawnTrailSpark() {
         const p = new Particle(this.sparkTex, this.cfg.colour, 500, 0, -40);
-        p.scale.set(1.2);
+        p.scale.set(2.2);
         p.alpha = 0.5;
         p.blendMode = 'add';
         this.addChild(p);
@@ -86,7 +86,7 @@ export class RocketFirework extends Firework {
             const vy = Math.sin(angle) * EXPLOSION_SPEED;
 
             const p = new Particle(this.sparkTex, this.cfg.colour, 1200, vx, vy);
-            p.scale.set(1.6);
+            p.scale.set(1.8);
             p.blendMode = 'add';
             p.ay = GRAVITY;
             this.addChild(p);

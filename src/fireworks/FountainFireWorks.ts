@@ -5,8 +5,8 @@ import type { FireworkConfig } from '../core/xmlLoader';
 
 const EMIT_INTERVAL = 30;      // ms between sparks  (≈ 33 particles /s)
 const PARTICLE_LIFE = 1200;    // ms each spark lives
-const INITIAL_SPEED = 250;     // px/s vertical launch
-const SPREAD = 80;             // px/s half-cone sideways
+const INITIAL_SPEED = 200;     // px/s vertical launch
+const SPREAD = 60;             // px/s half-cone sideways
 const GRAVITY = -800;          // px/s² (Y-up coordinate system)
 
 export class FountainFirework extends Firework {
@@ -67,7 +67,7 @@ export class FountainFirework extends Firework {
 
         const p = new Particle(this.sparkTex, this.cfg.colour, PARTICLE_LIFE, vx, vy);
         p.ay = GRAVITY;                                   // global downward pull
-        p.scale.set(1.8);                                 // 8 px texture → ~14 px spark
+        p.scale.set(2.5);                                 // 8 px texture → ~14 px spark
         p.blendMode = 'add';                    // soft glow
         this.addChild(p);
     }
