@@ -62,7 +62,7 @@ export class FountainFirework extends Firework {
 
         const p = new Particle(this.sparkTex, this.cfg.colour, 1200, vx, vy);
         p.ay = Settings.gravity;                                   // global downward pull
-        p.scale.set(Settings.sparkScale);                          // Use sparkScale setting
+        p.scale.set(Settings.fountainSparkScale);                  // Use fountain-specific spark scale
         p.blendMode = 'add';                                       // soft glow
         this.addChild(p);
     }
