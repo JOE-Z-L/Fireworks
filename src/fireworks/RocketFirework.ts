@@ -19,6 +19,8 @@ export class RocketFirework extends Firework {
         this.body = new Sprite(bodyTex);
         this.body.anchor.set(0.5);
         this.body.scale.set(0.4);
+        this.body.tint = cfg.colour;
+        this.body.blendMode = 'add';
         this.addChild(this.body);
     }
 
@@ -31,6 +33,8 @@ export class RocketFirework extends Firework {
             // ─── Thrust phase ─────────────────────────────────────
             this.x += (this.cfg.velocity?.x ?? 0) * dtSec;
             this.y += (this.cfg.velocity?.y ?? 0) * dtSec;
+
+            this.body.scale.set(Settings.rocketScale);
 
             // Trail particles
             this.trailTimer -= dt;
@@ -75,14 +79,19 @@ export class RocketFirework extends Firework {
         this.exploded = true;
         this.body.visible = false;
 
-        // Let's call it "debris"
-        for (let i = 0; i < 60; i++) {
-            const angle = (i / 60) * Math.PI * 2;
-            const vx = Math.cos(angle) * Settings.explosionSpeed;
-            const vy = Math.sin(angle) * Settings.explosionSpeed;
+        // Use setting for particle count
+        const particleCount = Settings.explosionParticles;
+
+        for (let i = 0; i < particleCount; i++) {
+            const angle = (i / particleCount) * Math.PI * 2;
+
+            // Add jitter to velocity for scattered effect
+            const jitter = 1 - (Math.random() * Settings.explosionJitter);
+            const vx = Math.cos(angle) * Settings.explosionSpeed * jitter;
+            const vy = Math.sin(angle) * Settings.explosionSpeed * jitter;
 
             const p = new Particle(this.sparkTex, this.cfg.colour, 1200, vx, vy);
-            p.scale.set(Settings.sparkScale);
+            p.scale.set(Settings.rocketSparkScale);
             p.blendMode = 'add';
             p.ay = Settings.gravity;
             this.addChild(p);
