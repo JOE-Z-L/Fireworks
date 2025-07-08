@@ -3,6 +3,8 @@ import { Firework } from './FireWork';
 import { Particle } from '../particules/Particule';
 import type { FireworkConfig } from '../core/xmlLoader';
 import { Settings } from '../config/runtimeSettings';
+import { Bench } from '../core/benchmark';
+import { GlobalParticlePool } from '../particules/ParticlePool';
 
 export class RocketFirework extends Firework {
     private exploded = false;
@@ -49,26 +51,45 @@ export class RocketFirework extends Firework {
             }
         }
 
-        // Update & cull debris
-        this.children.forEach(child => {
+        // ─── Update and remove dead particles in a single loop ───────────────────────────
+        for (let i = this.children.length - 1; i >= 0; i--) {
+            const child = this.children[i];
+            
+            // Skip the rocket body
+            if (child === this.body) continue;
+            
+            // Update the child if it has an update method
             if ('update' in child && typeof child.update === 'function') {
                 child.update(dt);
             }
-        });
+            
+            // Remove if dead
+            if ('isDead' in child && typeof child.isDead === 'function' && (child as any).isDead()) {
+                this.removeChild(child);
+                
+                // Release to pool if pooling is enabled
+                if (Bench.pooling) {
+                    GlobalParticlePool.release(child as Particle);
+                }
+            }
+        }
+    }
 
-        // Find and remove dead particles
-        const deadParticles = this.children.filter(child =>
-            'isDead' in child && typeof child.isDead === 'function' && child.isDead()
-        );
+    private makeSpark(life: number, vx: number, vy: number) {
+        const p = Bench.pooling
+            ? GlobalParticlePool.get(this.sparkTex, this.cfg.colour)
+            : new Particle(this.sparkTex, this.cfg.colour, 0);
 
-        // Remove each dead particle individually
-        deadParticles.forEach(child => {
-            this.removeChild(child);
-        });
+        p.reset(life, 0, 0, vx, vy);
+        p.scale.set(Settings.rocketSparkScale);
+        p.ay = Settings.gravity;
+        p.blendMode = 'add';
+        this.addChild(p);
+        return p;
     }
 
     private spawnTrailSpark() {
-        const p = new Particle(this.sparkTex, this.cfg.colour, 500, 0, -40);
+        const p = this.makeSpark(500, 0, -40);
         p.scale.set(Settings.trailScale);
         p.alpha = 0.5;
         p.blendMode = 'add';
