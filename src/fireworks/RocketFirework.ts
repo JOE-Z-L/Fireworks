@@ -34,6 +34,8 @@ export class RocketFirework extends Firework {
             this.x += (this.cfg.velocity?.x ?? 0) * dtSec;
             this.y += (this.cfg.velocity?.y ?? 0) * dtSec;
 
+            this.body.scale.set(Settings.rocketScale);
+
             // Trail particles
             this.trailTimer -= dt;
             if (this.trailTimer <= 0) {
