@@ -32,42 +32,34 @@ export class RocketFirework extends Firework {
         const dtSec = dt / 1000;
 
         if (!this.exploded) {
-            // ─── Thrust phase ─────────────────────────────────────
             this.x += (this.cfg.velocity?.x ?? 0) * dtSec;
             this.y += (this.cfg.velocity?.y ?? 0) * dtSec;
 
             this.body.scale.set(Settings.rocketScale);
 
-            // Trail particles
             this.trailTimer -= dt;
             if (this.trailTimer <= 0) {
                 this.spawnTrailSpark();
                 this.trailTimer += Settings.emitInterval;
             }
 
-            // Time to explode?
             if (this.elapsed >= this.cfg.duration) {
                 this.explode();
             }
         }
 
-        // ─── Update and remove dead particles in a single loop ───────────────────────────
         for (let i = this.children.length - 1; i >= 0; i--) {
             const child = this.children[i];
             
-            // Skip the rocket body
             if (child === this.body) continue;
             
-            // Update the child if it has an update method
             if ('update' in child && typeof child.update === 'function') {
                 child.update(dt);
             }
             
-            // Remove if dead
             if ('isDead' in child && typeof child.isDead === 'function' && (child as any).isDead()) {
                 this.removeChild(child);
                 
-                // Release to pool if pooling is enabled
                 if (Bench.pooling) {
                     GlobalParticlePool.release(child as Particle);
                 }
@@ -104,13 +96,12 @@ export class RocketFirework extends Firework {
         this.exploded = true;
         this.body.visible = false;
 
-        // Use setting for particle count
         const particleCount = Settings.explosionParticles;
 
         for (let i = 0; i < particleCount; i++) {
             const angle = (i / particleCount) * Math.PI * 2;
 
-            // Add jitter to velocity for scattered effect
+            // Add jitter to velocity for scattered "shotgun" effect"
             const jitter = 1 - (Math.random() * Settings.explosionJitter);
             const vx = Math.cos(angle) * Settings.explosionSpeed * jitter;
             const vy = Math.sin(angle) * Settings.explosionSpeed * jitter;

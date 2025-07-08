@@ -20,18 +20,12 @@ export function enableResponsiveCanvas(
 ) {
   function resize() {
     const { innerWidth: W, innerHeight: H } = window;
-
-    // LETTERBOX — calculate the largest uniform scale that fits
     const scale = Math.min(W / logicalWidth, H / logicalHeight);
-
-    // Resize the canvas DOM element
     const cssW = Math.round(logicalWidth * scale);
     const cssH = Math.round(logicalHeight * scale);
-
     const wrapper = document.getElementById('fw-container')!;
     wrapper.appendChild(app.canvas);
 
-    // Style the wrapper instead of the canvas
     Object.assign(wrapper.style, {
       position: 'absolute',
       left: `${(W - cssW) / 2}px`,
@@ -41,11 +35,9 @@ export function enableResponsiveCanvas(
       background: '#000',      // bars colour
     });
 
-    // Re-centre viewport origin (we keep same logical coords)
     viewport.position.set(logicalWidth / 2, logicalHeight / 2);
   }
 
-  // Initial call + listener
   resize();
   window.addEventListener('resize', resize);
 

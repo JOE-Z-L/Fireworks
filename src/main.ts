@@ -11,7 +11,6 @@ import { createDebugToggle } from "./components/DebugToggle";
 import { createStatsDisplay } from "./components/StatsDisplay";
 import { createDebugPanel } from "./components/DebugPanel";
 
-// Load textures directly using Image objects and Texture.from
 let textures = {
     particle: Texture.WHITE,
     rocket: Texture.WHITE,
@@ -19,7 +18,6 @@ let textures = {
   };
 
 try {
-  // Function to load an image and create a texture
   const loadTexture = (url: string): Promise<Texture> => {
     return new Promise((resolve, reject) => {
       const img = new Image();
@@ -35,7 +33,6 @@ try {
     });
   };
 
-  // Load all textures
   Promise.all([
     loadTexture('/assets/particle.png'),
     loadTexture('/assets1/rocket.png'),
@@ -49,7 +46,6 @@ try {
     console.log('Successfully loaded all textures manually');
   }).catch(err => {
     console.warn('Manual texture loading failed, using fallbacks', err);
-    // Keep using the default WHITE textures
   });
   
   console.log('Using textures:', textures);
@@ -57,17 +53,14 @@ try {
   console.error('Error in texture loading process:', error);
 }
 
-// Near the top of the file, add this function to parse URL parameters
 function getQueryParam(param: string, value: string): boolean {
   const urlParams = new URLSearchParams(window.location.search);
   return urlParams.get(param) === value;
 }
 
-// Add debug mode flag
 const DEBUG_MODE = getQueryParam('mode', 'debug');
 
 (async () => {
-    // Add debug toggle button to the DOM
     document.body.appendChild(createDebugToggle(DEBUG_MODE));
 
     const app = new Application();
@@ -82,10 +75,8 @@ const DEBUG_MODE = getQueryParam('mode', 'debug');
 
     console.log('textures loaded', textures);
 
-    // Add canvas to DOM
     document.getElementById('fw-container')?.appendChild(app.canvas);
 
-    // Add welcome a message
     const message = new Text({
         text: 'fireworks Display\nLoading...',
         style: {
@@ -104,11 +95,9 @@ const DEBUG_MODE = getQueryParam('mode', 'debug');
 
     try {
         const screen = createCoordinatesRoot(app.screen.width, app.screen.height);
-        // Initial scale is set but will be updated by ticker
         screen.scale.set(Settings.viewportZoom, -Settings.viewportZoom);
         app.stage.addChild(screen);
 
-        // Enable responsive canvas
         const logicalW = ENV.DISPLAY.WIDTH;   // 1024
         const logicalH = ENV.DISPLAY.HEIGHT;  // 768
         enableResponsiveCanvas(app, screen, logicalW, logicalH);
@@ -125,10 +114,8 @@ const DEBUG_MODE = getQueryParam('mode', 'debug');
             fountain: textures.fountain
         };
 
-        // Initialize scheduler and start animation
         const scheduler = new Scheduler(cfgs, screen, textureSet);
 
-        // Update ticker to include zoom adjustment
         app.ticker.add(({ deltaMS }) => {
             screen.scale.set(Settings.viewportZoom, -Settings.viewportZoom);
             scheduler.update(deltaMS);
