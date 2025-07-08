@@ -1,4 +1,5 @@
 const DEFAULT_SETTINGS = {
+    rocketScale: 1,          // Size of rocket body
     rocketSparkScale: 2.4,    // Size of rocket explosion particles
     fountainSparkScale: 2.4,  // Size of fountain particles
     trailScale: 1.2,          // Size of rocket trail particles
