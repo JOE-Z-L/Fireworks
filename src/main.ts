@@ -200,9 +200,15 @@ try {
         }
     });
 
-    const resetBtn = pane.addButton({
+    // Create a folder for the reset button
+    const resetFolder = pane.addFolder({
+        title: 'Reset Options',
+        expanded: false,
+    });
+
+    // Add the button to the folder
+    const resetBtn = resetFolder.addButton({
         title: 'Reset to Defaults',
-        expandable: false,
     });
 
     resetBtn.on('click', () => {
