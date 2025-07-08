@@ -6,6 +6,7 @@ export class Particle extends Sprite {
     ax: number;
     ay: number;
     life: number;              // ms remaining
+    pooled = false;            // Track if particle is already in pool
 
     constructor(texture: Texture, colour: number, life: number, vx = 0, vy = 0, ax = 0, ay = 0) {
         super({ texture, tint: colour });
@@ -35,7 +36,18 @@ export class Particle extends Sprite {
         this.alpha = Math.max(this.life / 1000, 0);  // fades over last second
     }
 
+    reset(life: number, x: number, y: number, vx: number, vy: number) {
+        this.pooled = false;    // mark as active
+        this.life = life;
+        this.x = x; this.y = y;
+        this.vx = vx; this.vy = vy;
+        this.alpha = 1;
+        this.visible = true;
+    }
+
+
     isDead(): boolean {
         return this.life <= 0;
     }
+
 }
