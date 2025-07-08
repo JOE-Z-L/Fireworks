@@ -19,6 +19,8 @@ export class RocketFirework extends Firework {
         this.body = new Sprite(bodyTex);
         this.body.anchor.set(0.5);
         this.body.scale.set(0.4);
+        this.body.tint = cfg.colour;
+        this.body.blendMode = 'add';
         this.addChild(this.body);
     }
 
@@ -75,14 +77,14 @@ export class RocketFirework extends Firework {
         this.exploded = true;
         this.body.visible = false;
 
-        // Let's call it "debris"
+        // I will  call it "debris"
         for (let i = 0; i < 60; i++) {
             const angle = (i / 60) * Math.PI * 2;
             const vx = Math.cos(angle) * Settings.explosionSpeed;
             const vy = Math.sin(angle) * Settings.explosionSpeed;
 
             const p = new Particle(this.sparkTex, this.cfg.colour, 1200, vx, vy);
-            p.scale.set(Settings.sparkScale);
+            p.scale.set(Settings.rocketSparkScale);  // Use rocket-specific spark scale
             p.blendMode = 'add';
             p.ay = Settings.gravity;
             this.addChild(p);

@@ -1,4 +1,4 @@
-import { Application, Text, Assets, Texture } from "pixi.js";
+import { Application, Text,  Texture } from "pixi.js";
 import { loadFireWorkConfigs } from "./core/xmlLoader";
 import { ENV } from "./config/env";
 import {createCoordinatesRoot} from "./core/coordinatesSystem";
@@ -8,40 +8,46 @@ import {Pane} from "tweakpane";
 import { Settings, resetSettings } from "./config/runtimeSettings";
 import { enableResponsiveCanvas } from "./core/canvasResize";
 
-// Try a different approach to asset loading
-let textures;
-try {
-  // Create empty textures first
-  textures = {
+// Load textures directly using Image objects and Texture.from
+let textures = {
     particle: Texture.WHITE,
     rocket: Texture.WHITE,
     fountain: Texture.WHITE
   };
 
-  // Check if assets exist before trying to load them
-  const assetsExist = await Promise.all([
-    fetch('/assets1/particle.png').then(r => r.ok).catch(() => false),
-    fetch('/assets1/rocket.png').then(r => r.ok).catch(() => false),
-    fetch('/assets1/fountain.png').then(r => r.ok).catch(() => false)
-  ]);
+try {
+  // Function to load an image and create a texture
+  const loadTexture = (url: string): Promise<Texture> => {
+    return new Promise((resolve, reject) => {
+      const img = new Image();
+      img.crossOrigin = 'anonymous';
+      img.onload = () => {
+        resolve(Texture.from(img));
+      };
+      img.onerror = () => {
+        console.warn(`Failed to load image: ${url}`);
+        reject(new Error(`Failed to load image: ${url}`));
+      };
+      img.src = url;
+    });
+  };
 
-  if (assetsExist.every(exists => exists)) {
-    // All assets exist, try to load them with PIXI
-    try {
-      const loadedTextures = await Assets.load({
-        particle: '/assets/particle.png',
-        rocket: '/assets/rocket.png',
-        fountain: '/assets/fountain.png',
-      });
-      
-      textures = loadedTextures;
-      console.log('Successfully loaded all textures');
-    } catch (loadError) {
-      console.warn('PIXI asset loading failed, using fallbacks', loadError);
-    }
-  } else {
-    console.warn('Some assets do not exist, using fallbacks');
-  }
+  // Load all textures
+  Promise.all([
+    loadTexture('/assets/particle.png'),
+    loadTexture('/assets1/rocket.png'),
+    loadTexture('/assets/fountain.png')
+  ]).then(([particleTex, rocketTex, fountainTex]) => {
+    textures = {
+      particle: particleTex,
+      rocket: rocketTex,
+      fountain: fountainTex
+    };
+    console.log('Successfully loaded all textures manually');
+  }).catch(err => {
+    console.warn('Manual texture loading failed, using fallbacks', err);
+    // Keep using the default WHITE textures
+  });
   
   console.log('Using textures:', textures);
 } catch (error) {
@@ -113,15 +119,26 @@ try {
     }
 
 
+    // Create separate panels for different firework types
     const pane = new Pane({ title: 'Fireworks' });
-    pane.addBinding(Settings, 'sparkScale',     { min: 1, max: 10, step: 0.1 });
-    pane.addBinding(Settings, 'trailScale',     { min: 1, max: 10, step: 0.1 });
-    pane.addBinding(Settings, 'fountainSpeed',  { min: 100, max: 500, step: 10 });
-    pane.addBinding(Settings, 'fountainSpread', { min: 20,  max: 500, step: 5  });
-    pane.addBinding(Settings, 'explosionSpeed', { min: 150, max: 1000, step: 10 });
-    pane.addBinding(Settings, 'gravity',        { min: -800, max: -200, step: 50 });
-    pane.addBinding(Settings, 'emitInterval',   { min: 0.1, max: 10,  step: 1  });
-    pane.addBinding(Settings, 'viewportZoom',   { min: 0.5, max: 3, step: 0.1 });
+
+    // Rocket controls panel
+    const rocketFolder = pane.addFolder({ title: 'Rocket Settings' });
+    rocketFolder.addBinding(Settings, 'rocketSparkScale', { min: 0.5, max: 3.0, step: 0.1, label: 'Spark Scale' });
+    rocketFolder.addBinding(Settings, 'trailScale',     { min: 1, max: 10, step: 0.1 });
+    rocketFolder.addBinding(Settings, 'explosionSpeed', { min: 150, max: 1000, step: 10 });
+
+    // Fountain controls panel
+    const fountainFolder = pane.addFolder({ title: 'Fountain Settings' });
+    fountainFolder.addBinding(Settings, 'fountainSparkScale', { min: 0.5, max: 3.0, step: 0.1, label: 'Spark Scale' });
+    fountainFolder.addBinding(Settings, 'fountainSpeed',  { min: 100, max: 500, step: 10 });
+    fountainFolder.addBinding(Settings, 'fountainSpread', { min: 20,  max: 200, step: 5  });
+
+    // Global settings panel
+    const globalFolder = pane.addFolder({ title: 'Global Settings' });
+    globalFolder.addBinding(Settings, 'gravity',        { min: -500, max: -100, step: 50 });
+    globalFolder.addBinding(Settings, 'emitInterval',   { min: 0.01, max: 10,  step: 0.01  });
+    globalFolder.addBinding(Settings, 'viewportZoom',   { min: 0.5, max: 3, step: 0.1 });
 
     const resetBtn = pane.addButton({
         title: 'Reset to Defaults',
