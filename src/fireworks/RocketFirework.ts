@@ -1,24 +1,24 @@
-import { Graphics, Texture } from 'pixi.js';
+import { Sprite, Texture } from 'pixi.js';
 import { Firework } from './FireWork';
 import { Particle } from '../particules/Particule';
 import type { FireworkConfig } from '../core/xmlLoader';
-
-const TRAIL_EMIT = 50;         // ms between trail sparks
-const EXPLOSION_PARTS = 60;    // number of explosion sparks
-const EXPLOSION_SPEED = 300;   // px/s initial debris velocity
-const GRAVITY = -800;          // shared with fountain
+import { Settings } from '../config/runtimeSettings';
 
 export class RocketFirework extends Firework {
     private exploded = false;
     private trailTimer = 0;
+    private body: Sprite;
 
-    /** Small rocket body so the audience sees the ascent */
-    private body = new Graphics()
-        .circle(0, 0, 3)
-        .fill(0xffffff);
-
-    constructor(cfg: FireworkConfig) {
+    constructor(
+        cfg: FireworkConfig,
+        bodyTex: Texture,
+        private readonly sparkTex: Texture
+    ) {
         super(cfg);
+
+        this.body = new Sprite(bodyTex);
+        this.body.anchor.set(0.5);
+        this.body.scale.set(0.4);
         this.addChild(this.body);
     }
 
@@ -36,7 +36,7 @@ export class RocketFirework extends Firework {
             this.trailTimer -= dt;
             if (this.trailTimer <= 0) {
                 this.spawnTrailSpark();
-                this.trailTimer += TRAIL_EMIT;
+                this.trailTimer += Settings.emitInterval;
             }
 
             // Time to explode?
@@ -63,10 +63,11 @@ export class RocketFirework extends Firework {
         });
     }
 
-    // ──────────────────────────────────────────────────────────
     private spawnTrailSpark() {
-        const p = new Particle(Texture.WHITE, this.cfg.colour, 600, 0, -50);
-        p.alpha = 0.5;           // dimmer than main burst
+        const p = new Particle(this.sparkTex, this.cfg.colour, 500, 0, -40);
+        p.scale.set(Settings.trailScale);
+        p.alpha = 0.5;
+        p.blendMode = 'add';
         this.addChild(p);
     }
 
@@ -74,14 +75,16 @@ export class RocketFirework extends Firework {
         this.exploded = true;
         this.body.visible = false;
 
-        //  lets call it "debris"
-        for (let i = 0; i < EXPLOSION_PARTS; i++) {
-            const angle = (i / EXPLOSION_PARTS) * Math.PI * 2;
-            const vx = Math.cos(angle) * EXPLOSION_SPEED;
-            const vy = Math.sin(angle) * EXPLOSION_SPEED;
+        // Let's call it "debris"
+        for (let i = 0; i < 60; i++) {
+            const angle = (i / 60) * Math.PI * 2;
+            const vx = Math.cos(angle) * Settings.explosionSpeed;
+            const vy = Math.sin(angle) * Settings.explosionSpeed;
 
-            const p = new Particle(Texture.WHITE, this.cfg.colour, 1200, vx, vy);
-            p.ay = GRAVITY;        // debris caem
+            const p = new Particle(this.sparkTex, this.cfg.colour, 1200, vx, vy);
+            p.scale.set(Settings.sparkScale);
+            p.blendMode = 'add';
+            p.ay = Settings.gravity;
             this.addChild(p);
         }
     }
