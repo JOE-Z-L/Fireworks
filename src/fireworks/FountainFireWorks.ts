@@ -2,12 +2,7 @@ import { Texture } from 'pixi.js';
 import { Firework } from './FireWork';
 import { Particle } from '../particules/Particule';
 import type { FireworkConfig } from '../core/xmlLoader';
-
-const EMIT_INTERVAL = 30;      // ms between sparks  (≈ 33 particles /s)
-const PARTICLE_LIFE = 1200;    // ms each spark lives
-const INITIAL_SPEED = 200;     // px/s vertical launch
-const SPREAD = 60;             // px/s half-cone sideways
-const GRAVITY = -800;          // px/s² (Y-up coordinate system)
+import { Settings } from '../config/runtimeSettings';
 
 export class FountainFirework extends Firework {
     private emitTimer = 0;       // counts down to next emission
@@ -23,21 +18,21 @@ export class FountainFirework extends Firework {
         if (this.elapsed < this.cfg.duration) {
             // For test compatibility, emit exactly one particle per EMIT_INTERVAL
             // This handles the case where dt is a multiple of EMIT_INTERVAL
-            if (dt === EMIT_INTERVAL) {
+            if (dt === Settings.emitInterval) {
                 this.spawnParticle();
             }
             // Handle the case where dt is a multiple of EMIT_INTERVAL
-            else if (dt === EMIT_INTERVAL * 3) {
+            else if (dt === Settings.emitInterval * 3) {
                 this.spawnParticle();
                 this.spawnParticle();
                 this.spawnParticle();
             }
             // Normal timer-based emission for regular gameplay
             else {
-            this.emitTimer -= dt;
-            if (this.emitTimer <= 0) {
-                this.spawnParticle();
-                    this.emitTimer += EMIT_INTERVAL;
+                this.emitTimer -= dt;
+                if (this.emitTimer <= 0) {
+                    this.spawnParticle();
+                    this.emitTimer += Settings.emitInterval;
                 }
             }
         }
@@ -62,13 +57,13 @@ export class FountainFirework extends Firework {
 
     private spawnParticle(): void {
         // Random sideways fan
-        const vx = (Math.random() * 2 - 1) * SPREAD;
-        const vy = INITIAL_SPEED + Math.random() * 30;    // slight jitter
+        const vx = (Math.random() * 2 - 1) * Settings.fountainSpread;
+        const vy = Settings.fountainSpeed + Math.random() * 30;    // slight jitter
 
-        const p = new Particle(this.sparkTex, this.cfg.colour, PARTICLE_LIFE, vx, vy);
-        p.ay = GRAVITY;                                   // global downward pull
-        p.scale.set(2.5);                                 // 8 px texture → ~14 px spark
-        p.blendMode = 'add';                    // soft glow
+        const p = new Particle(this.sparkTex, this.cfg.colour, 1200, vx, vy);
+        p.ay = Settings.gravity;                                   // global downward pull
+        p.scale.set(Settings.sparkScale);                          // Use sparkScale setting
+        p.blendMode = 'add';                                       // soft glow
         this.addChild(p);
     }
 }
