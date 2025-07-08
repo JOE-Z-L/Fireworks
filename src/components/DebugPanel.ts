@@ -6,7 +6,7 @@ import { Settings, resetSettings } from "../config/runtimeSettings";
  * @returns The created Tweakpane instance
  */
 export function createDebugPanel(): Pane {
-    const pane = new Pane({ title: 'Fireworks', expanded: false });
+    const pane = new Pane({ title: 'Fireworks Debug Panel', expanded: false });
 
     // Rocket controls panel
     const rocketFolder = pane.addFolder({ title: 'Rocket Settings' });

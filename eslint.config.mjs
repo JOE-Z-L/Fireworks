@@ -6,13 +6,20 @@ import tsparser from "@typescript-eslint/parser";
 export default [
   { ignores: ["dist"] },
   {
-    extends: [js.configs.recommended, prettier],
     files: ["**/*.{js,jsx}"],
     languageOptions: {
       ecmaVersion: "latest",
       sourceType: "module",
     },
-    rules: {},
+    // Include js.configs.recommended rules directly instead of using extends
+    rules: {
+      ...js.configs.recommended.rules,
+      ...prettier.rules,
+    },
+    // Include prettier plugin
+    plugins: {
+      prettier: prettier.plugins?.prettier,
+    },
   },
   {
     files: ["**/*.{ts,tsx}"],
