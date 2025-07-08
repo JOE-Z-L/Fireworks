@@ -7,6 +7,8 @@ import type { TextureSet } from "./fireworks";
 import {Pane} from "tweakpane";
 import { Settings, resetSettings } from "./config/runtimeSettings";
 import { enableResponsiveCanvas } from "./core/canvasResize";
+import { Bench, initBench } from "./core/benchmark";
+import { GlobalParticlePool } from "./particules/ParticlePool";
 
 // Load textures directly using Image objects and Texture.from
 let textures = {
@@ -62,6 +64,9 @@ try {
         background: ENV.DISPLAY.BACKGROUND_COLOR,
         resolution: devicePixelRatio,
     });
+
+    initBench(app.ticker);
+
     console.log('textures loaded', textures);
 
     // Add canvas to DOM
@@ -135,12 +140,65 @@ try {
     fountainFolder.addBinding(Settings, 'fountainSparkScale', { min: 0.5, max: 3.0, step: 0.1, label: 'Spark Scale' });
     fountainFolder.addBinding(Settings, 'fountainSpeed',  { min: 100, max: 500, step: 10 });
     fountainFolder.addBinding(Settings, 'fountainSpread', { min: 20,  max: 200, step: 5  });
+    fountainFolder.addBinding(Settings, 'fountainLife', { min: 300, max: 2000, step: 50, label: 'Particle Life' });
 
     // Global settings panel
     const globalFolder = pane.addFolder({ title: 'Global Settings' });
     globalFolder.addBinding(Settings, 'gravity',        { min: -500, max: -100, step: 50 });
     globalFolder.addBinding(Settings, 'emitInterval',   { min: 0.01, max: 10,  step: 0.01  });
     globalFolder.addBinding(Settings, 'viewportZoom',   { min: 0.5, max: 3, step: 0.1 });
+
+    // Create a custom stats display positioned to the left of the pane
+    const statsDisplay = document.createElement('div');
+    statsDisplay.id = 'stats-display';
+    statsDisplay.style.cssText = `
+        position: absolute;
+        top: 10px;
+        right: ${pane.element.offsetWidth + 20}px;
+        background: rgba(0, 0, 0, 0.7);
+        color: #fff;
+        font-family: monospace;
+        padding: 10px;
+        border-radius: 4px;
+        font-size: 12px;
+        min-width: 120px;
+        z-index: 1000;
+    `;
+    document.body.appendChild(statsDisplay);
+
+    const poolingToggle = document.createElement('div');
+    poolingToggle.innerHTML = `<label><input type="checkbox" ${Bench.pooling ? 'checked' : ''}/> Use Pool</label>`;
+    poolingToggle.style.marginTop = '8px';
+    poolingToggle.querySelector('input')?.addEventListener('change', (e) => {
+        Bench.pooling = (e.target as HTMLInputElement).checked;
+
+        // Completely reset the pool when toggling pooling
+        GlobalParticlePool.reset();
+    });
+    statsDisplay.appendChild(poolingToggle);
+
+    // Position the stats display after the pane is fully initialized
+    setTimeout(() => {
+        statsDisplay.style.right = `${pane.element.offsetWidth + 20}px`;
+    }, 100);
+
+    // Update stats display less frequently
+    let updateCounter = 0;
+    app.ticker.add(() => {
+        updateCounter++;
+
+        // Only update every 10 frames (about 6 times per second at 60fps)
+        if (updateCounter % 50 === 0) {
+        statsDisplay.innerHTML = `
+            FPS: ${Bench.fps.toFixed(1)}<br>
+            AVG: ${Bench.fpsAvg}<br>
+            MEM: ${Bench.memMB} MB<br>
+            Active: ${GlobalParticlePool.stats.active}<br>
+            Free: ${GlobalParticlePool.stats.free}
+        `;
+        statsDisplay.appendChild(poolingToggle);
+        }
+    });
 
     const resetBtn = pane.addButton({
         title: 'Reset to Defaults',

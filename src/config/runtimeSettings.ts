@@ -5,6 +5,7 @@ const DEFAULT_SETTINGS = {
     trailScale: 1.2,          // Size of rocket trail particles
     fountainSpeed: 300,       // Initial upward velocity for fountain particles
     fountainSpread: 100,      // Sideways spread for fountain particles
+    fountainLife: 1200,       // Lifetime of fountain particles in ms
     explosionSpeed: 400,      // Initial velocity for explosion particles
     gravity: -200,            // Downward acceleration (negative because Y is up)
     emitInterval: 2,          // Time between particle emissions (ms)
