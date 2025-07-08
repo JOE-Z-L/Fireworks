@@ -65,9 +65,13 @@ export class FountainFirework extends Firework {
         const vx = (Math.random() * 2 - 1) * Settings.fountainSpread;
         const vy = Settings.fountainSpeed + Math.random() * 30;    // slight jitter
 
-        const p = Bench.pooling
-            ? GlobalParticlePool.get(this.sparkTex, this.cfg.colour)
-            : new Particle(this.sparkTex, this.cfg.colour, 0);
+        let p;
+        if (Bench.pooling) {
+            p = GlobalParticlePool.get(this.sparkTex, this.cfg.colour);
+        } else {
+            p = new Particle(this.sparkTex, this.cfg.colour, 0);
+            p.pooled = false; // Ensure it's marked as not pooled
+        }
 
         p.reset(1200, 0, 0, vx, vy);   // Restore constant value of 1200ms
         p.scale.set(Settings.fountainSparkScale);                  // Use fountain-specific spark scale

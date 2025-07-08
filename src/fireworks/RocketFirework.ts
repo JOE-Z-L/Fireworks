@@ -76,9 +76,13 @@ export class RocketFirework extends Firework {
     }
 
     private makeSpark(life: number, vx: number, vy: number) {
-        const p = Bench.pooling
-            ? GlobalParticlePool.get(this.sparkTex, this.cfg.colour)
-            : new Particle(this.sparkTex, this.cfg.colour, 0);
+        let p;
+        if (Bench.pooling) {
+            p = GlobalParticlePool.get(this.sparkTex, this.cfg.colour);
+        } else {
+            p = new Particle(this.sparkTex, this.cfg.colour, 0);
+            p.pooled = false; // Ensure it's marked as not pooled
+        }
 
         p.reset(life, 0, 0, vx, vy);
         p.scale.set(Settings.rocketSparkScale);

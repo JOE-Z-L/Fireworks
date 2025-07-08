@@ -172,12 +172,8 @@ try {
     poolingToggle.querySelector('input')?.addEventListener('change', (e) => {
         Bench.pooling = (e.target as HTMLInputElement).checked;
 
-        // Reset pool counters when toggling pooling off
-        if (!Bench.pooling) {
-            // Create a new pool to reset all counters
-            const newPool = new ParticlePool();
-            Object.assign(GlobalParticlePool, newPool);
-        }
+        // Completely reset the pool when toggling pooling
+        GlobalParticlePool.reset();
     });
     statsDisplay.appendChild(poolingToggle);
 
