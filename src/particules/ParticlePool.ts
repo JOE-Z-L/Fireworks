@@ -8,7 +8,6 @@ class Bucket {
 }
 
 export class ParticlePool {
-    /** key = `${tint}-${texture.uid}`  */
     private buckets: Map<string, Bucket> = new Map();
 
     private key(tex: Texture, tint: number) {
@@ -24,21 +23,18 @@ export class ParticlePool {
     }
 
     release(p: Particle) {
-        if (!p.pooled) {     // guard against double-release
+        if (!p.pooled) {
             p.pooled = true;
         const b = this.bucket(p.texture, p.tint);
-            // Prevent negative active count
             if (b.active > 0) {
         b.active--;
                 b.free.push(p);
             } else {
                 console.warn('Attempted to release more particles than were active');
-                // Don't add to free list if we didn't decrement active
             }
     }
     }
 
-    /** aggregated stats for monitor */
     get stats() {
         let active = 0, free = 0;
         for (const b of this.buckets.values()) {
@@ -59,7 +55,6 @@ export class ParticlePool {
     }
 
     reset() {
-        // Clear all buckets and start fresh
         this.buckets = new Map();
     }
 }
