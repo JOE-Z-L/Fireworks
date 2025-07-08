@@ -6,6 +6,7 @@ import { RocketFirework }   from './RocketFirework';
 export interface TextureSet {
     particle: Texture;
     rocket  : Texture;
+    fountain: Texture;
 }
 
 export function createFirework(cfg: FireworkConfig, tex: TextureSet) {
