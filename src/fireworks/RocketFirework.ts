@@ -79,14 +79,19 @@ export class RocketFirework extends Firework {
         this.exploded = true;
         this.body.visible = false;
 
-        // I will  call it "debris"
-        for (let i = 0; i < 60; i++) {
-            const angle = (i / 60) * Math.PI * 2;
-            const vx = Math.cos(angle) * Settings.explosionSpeed;
-            const vy = Math.sin(angle) * Settings.explosionSpeed;
+        // Use setting for particle count
+        const particleCount = Settings.explosionParticles;
+
+        for (let i = 0; i < particleCount; i++) {
+            const angle = (i / particleCount) * Math.PI * 2;
+
+            // Add jitter to velocity for scattered effect
+            const jitter = 1 - (Math.random() * Settings.explosionJitter);
+            const vx = Math.cos(angle) * Settings.explosionSpeed * jitter;
+            const vy = Math.sin(angle) * Settings.explosionSpeed * jitter;
 
             const p = new Particle(this.sparkTex, this.cfg.colour, 1200, vx, vy);
-            p.scale.set(Settings.rocketSparkScale);  // Use rocket-specific spark scale
+            p.scale.set(Settings.rocketSparkScale);
             p.blendMode = 'add';
             p.ay = Settings.gravity;
             this.addChild(p);

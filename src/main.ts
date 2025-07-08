@@ -125,7 +125,8 @@ try {
     // Rocket controls panel
     const rocketFolder = pane.addFolder({ title: 'Rocket Settings' });
     rocketFolder.addBinding(Settings, 'rocketSparkScale', { min: 0.5, max: 3.0, step: 0.1, label: 'Spark Scale' });
-    rocketFolder.addBinding(Settings, 'trailScale',     { min: 1, max: 10, step: 0.1 });
+    rocketFolder.addBinding(Settings, 'explosionParticles', { min: 30, max: 150, step: 5 });
+    rocketFolder.addBinding(Settings, 'explosionJitter', { min: 0, max: 2, step: 0.05 });
     rocketFolder.addBinding(Settings, 'explosionSpeed', { min: 150, max: 1000, step: 10 });
     rocketFolder.addBinding(Settings, 'rocketScale',    { min: 1, max: 2, step: 0.05, label: 'Rocket Scale' });
 
