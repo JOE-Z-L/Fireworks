@@ -4,6 +4,8 @@ import { ENV } from "./config/env";
 import {createCoordinatesRoot} from "./core/coordinatesSystem";
 import { Scheduler } from "./core/scheduler";
 import type { TextureSet } from "./fireworks";
+import {Pane} from "tweakpane";
+import { Settings, resetSettings } from "./config/runtimeSettings";
 
 // Try a different approach to asset loading
 let textures;
@@ -98,4 +100,24 @@ try {
     } catch (error) {
         console.error('Failed to load fireworks:', error);
     }
+
+
+    const pane = new Pane({ title: 'Fireworks' });
+    pane.addBinding(Settings, 'sparkScale',     { min: 1, max: 10, step: 0.1 });
+    pane.addBinding(Settings, 'trailScale',     { min: 1, max: 10, step: 0.1 });
+    pane.addBinding(Settings, 'fountainSpeed',  { min: 100, max: 500, step: 10 });
+    pane.addBinding(Settings, 'fountainSpread', { min: 20,  max: 500, step: 5  });
+    pane.addBinding(Settings, 'explosionSpeed', { min: 150, max: 1000, step: 10 });
+    pane.addBinding(Settings, 'gravity',        { min: -1200, max: -200, step: 50 });
+    pane.addBinding(Settings, 'emitInterval',   { min: 10, max: 60,  step: 1  });
+
+    const resetBtn = pane.addButton({
+        title: 'Reset to Defaults',
+    });
+
+    resetBtn.on('click', () => {
+        resetSettings();
+        pane.refresh();
+    });
+
 })();

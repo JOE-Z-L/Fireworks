@@ -2,11 +2,7 @@ import { Sprite, Texture } from 'pixi.js';
 import { Firework } from './FireWork';
 import { Particle } from '../particules/Particule';
 import type { FireworkConfig } from '../core/xmlLoader';
-
-const TRAIL_EMIT = 50;         // ms between trail sparks
-const EXPLOSION_PARTS = 60;    // number of explosion sparks
-const EXPLOSION_SPEED = 240;   // px/s initial debris velocity
-const GRAVITY = -800;          // shared with fountain
+import { Settings } from '../config/runtimeSettings';
 
 export class RocketFirework extends Firework {
     private exploded = false;
@@ -40,7 +36,7 @@ export class RocketFirework extends Firework {
             this.trailTimer -= dt;
             if (this.trailTimer <= 0) {
                 this.spawnTrailSpark();
-                this.trailTimer += TRAIL_EMIT;
+                this.trailTimer += Settings.emitInterval;
             }
 
             // Time to explode?
@@ -69,7 +65,7 @@ export class RocketFirework extends Firework {
 
     private spawnTrailSpark() {
         const p = new Particle(this.sparkTex, this.cfg.colour, 500, 0, -40);
-        p.scale.set(2.2);
+        p.scale.set(Settings.trailScale);
         p.alpha = 0.5;
         p.blendMode = 'add';
         this.addChild(p);
@@ -79,16 +75,16 @@ export class RocketFirework extends Firework {
         this.exploded = true;
         this.body.visible = false;
 
-        //  lets call it "debris"
-        for (let i = 0; i < EXPLOSION_PARTS; i++) {
-            const angle = (i / EXPLOSION_PARTS) * Math.PI * 2;
-            const vx = Math.cos(angle) * EXPLOSION_SPEED;
-            const vy = Math.sin(angle) * EXPLOSION_SPEED;
+        // Let's call it "debris"
+        for (let i = 0; i < 60; i++) {
+            const angle = (i / 60) * Math.PI * 2;
+            const vx = Math.cos(angle) * Settings.explosionSpeed;
+            const vy = Math.sin(angle) * Settings.explosionSpeed;
 
             const p = new Particle(this.sparkTex, this.cfg.colour, 1200, vx, vy);
-            p.scale.set(1.8);
+            p.scale.set(Settings.sparkScale);
             p.blendMode = 'add';
-            p.ay = GRAVITY;
+            p.ay = Settings.gravity;
             this.addChild(p);
         }
     }
