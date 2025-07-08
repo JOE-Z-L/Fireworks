@@ -1,16 +1,18 @@
 import { Container } from 'pixi.js';
 import type { FireworkConfig } from '../core/xmlLoader';
-import { createFirework } from '../fireworks';
+import { createFirework, type TextureSet } from '../fireworks';
 
 export class Scheduler {
     private elapsed = 0;                    // ms since show start
     private configs: FireworkConfig[];
     private root: Container;
     private launched = new Set<FireworkConfig>();
+    private textures: TextureSet;
 
-    constructor(configs: FireworkConfig[], root: Container) {
+    constructor(configs: FireworkConfig[], root: Container, textures: TextureSet) {
         this.configs = configs;
         this.root = root;
+        this.textures = textures;
     }
 
     /** Advance global time and update all active fireworks */
@@ -22,7 +24,7 @@ export class Scheduler {
         this.configs.forEach(config => {
             // Launch firework if we've passed its begin time and it hasn't been launched yet
             if (this.elapsed >= config.begin && !this.launched.has(config)) {
-                const firework = createFirework(config);
+                const firework = createFirework(config, this.textures);
                 this.root.addChild(firework);
                 this.launched.add(config);
             }
