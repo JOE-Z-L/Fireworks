@@ -36,7 +36,6 @@
     <Velocity x="180" y="600"/>
   </Firework>
 
-
   <Firework begin="4000" type="Fountain" colour="0xffFF40" duration="5000">
     <Position x="0" y="-384"/>
   </Firework>
