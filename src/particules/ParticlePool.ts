@@ -27,8 +27,14 @@ export class ParticlePool {
         if (!p.pooled) {     // guard against double-release
             p.pooled = true;
         const b = this.bucket(p.texture, p.tint);
+            // Prevent negative active count
+            if (b.active > 0) {
         b.active--;
-        b.free.push(p);
+                b.free.push(p);
+            } else {
+                console.warn('Attempted to release more particles than were active');
+                // Don't add to free list if we didn't decrement active
+            }
     }
     }
 
@@ -50,6 +56,11 @@ export class ParticlePool {
             this.buckets.set(k, b);
         }
         return b;
+    }
+
+    reset() {
+        // Clear all buckets and start fresh
+        this.buckets = new Map();
     }
 }
 
