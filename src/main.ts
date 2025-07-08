@@ -1,14 +1,15 @@
-import { Application, Text,  Texture } from "pixi.js";
+import { Application, Text, Texture } from "pixi.js";
 import { loadFireWorkConfigs } from "./core/xmlLoader";
 import { ENV } from "./config/env";
 import {createCoordinatesRoot} from "./core/coordinatesSystem";
 import { Scheduler } from "./core/scheduler";
 import type { TextureSet } from "./fireworks";
-import {Pane} from "tweakpane";
-import { Settings, resetSettings } from "./config/runtimeSettings";
+import { Settings } from "./config/runtimeSettings";
 import { enableResponsiveCanvas } from "./core/canvasResize";
-import { Bench, initBench } from "./core/benchmark";
-import { GlobalParticlePool } from "./particules/ParticlePool";
+import {  initBench } from "./core/benchmark";
+import { createDebugToggle } from "./components/DebugToggle";
+import { createStatsDisplay } from "./components/StatsDisplay";
+import { createDebugPanel } from "./components/DebugPanel";
 
 // Load textures directly using Image objects and Texture.from
 let textures = {
@@ -56,7 +57,19 @@ try {
   console.error('Error in texture loading process:', error);
 }
 
+// Near the top of the file, add this function to parse URL parameters
+function getQueryParam(param: string, value: string): boolean {
+  const urlParams = new URLSearchParams(window.location.search);
+  return urlParams.get(param) === value;
+}
+
+// Add debug mode flag
+const DEBUG_MODE = getQueryParam('mode', 'debug');
+
 (async () => {
+    // Add debug toggle button to the DOM
+    document.body.appendChild(createDebugToggle(DEBUG_MODE));
+
     const app = new Application();
     await app.init({
         width: ENV.DISPLAY.WIDTH,
@@ -70,7 +83,7 @@ try {
     console.log('textures loaded', textures);
 
     // Add canvas to DOM
-    document.getElementById('pixi-container')?.appendChild(app.canvas);
+    document.getElementById('fw-container')?.appendChild(app.canvas);
 
     // Add welcome a message
     const message = new Text({
@@ -108,7 +121,8 @@ try {
         // Create TextureSet from loaded textures
         const textureSet: TextureSet = {
             particle: textures.particle,
-            rocket: textures.rocket
+            rocket: textures.rocket,
+            fountain: textures.fountain
         };
 
         // Initialize scheduler and start animation
@@ -124,96 +138,10 @@ try {
     }
 
 
-    // Create separate panels for different firework types
-    const pane = new Pane({ title: 'Fireworks', expanded: false });
 
-    // Rocket controls panel
-    const rocketFolder = pane.addFolder({ title: 'Rocket Settings' });
-    rocketFolder.addBinding(Settings, 'rocketSparkScale', { min: 0.5, max: 3.0, step: 0.1, label: 'Spark Scale' });
-    rocketFolder.addBinding(Settings, 'explosionParticles', { min: 30, max: 150, step: 5 });
-    rocketFolder.addBinding(Settings, 'explosionJitter', { min: 0, max: 2, step: 0.05 });
-    rocketFolder.addBinding(Settings, 'explosionSpeed', { min: 150, max: 1000, step: 10 });
-    rocketFolder.addBinding(Settings, 'rocketScale',    { min: 1, max: 2, step: 0.05, label: 'Rocket Scale' });
-
-    // Fountain controls panel
-    const fountainFolder = pane.addFolder({ title: 'Fountain Settings' });
-    fountainFolder.addBinding(Settings, 'fountainSparkScale', { min: 0.5, max: 3.0, step: 0.1, label: 'Spark Scale' });
-    fountainFolder.addBinding(Settings, 'fountainSpeed',  { min: 100, max: 500, step: 10 });
-    fountainFolder.addBinding(Settings, 'fountainSpread', { min: 20,  max: 200, step: 5  });
-    fountainFolder.addBinding(Settings, 'fountainLife', { min: 300, max: 2000, step: 50, label: 'Particle Life' });
-
-    // Global settings panel
-    const globalFolder = pane.addFolder({ title: 'Global Settings' });
-    globalFolder.addBinding(Settings, 'gravity',        { min: -500, max: -100, step: 50 });
-    globalFolder.addBinding(Settings, 'emitInterval',   { min: 0.01, max: 10,  step: 0.01  });
-    globalFolder.addBinding(Settings, 'viewportZoom',   { min: 0.5, max: 3, step: 0.1 });
-
-    // Create a custom stats display positioned to the left of the pane
-    const statsDisplay = document.createElement('div');
-    statsDisplay.id = 'stats-display';
-    statsDisplay.style.cssText = `
-        position: absolute;
-        top: 10px;
-        right: ${pane.element.offsetWidth + 20}px;
-        background: rgba(0, 0, 0, 0.7);
-        color: #fff;
-        font-family: monospace;
-        padding: 10px;
-        border-radius: 4px;
-        font-size: 12px;
-        min-width: 120px;
-        z-index: 1000;
-    `;
-    document.body.appendChild(statsDisplay);
-
-    const poolingToggle = document.createElement('div');
-    poolingToggle.innerHTML = `<label><input type="checkbox" ${Bench.pooling ? 'checked' : ''}/> Use Pool</label>`;
-    poolingToggle.style.marginTop = '8px';
-    poolingToggle.querySelector('input')?.addEventListener('change', (e) => {
-        Bench.pooling = (e.target as HTMLInputElement).checked;
-
-        // Completely reset the pool when toggling pooling
-        GlobalParticlePool.reset();
-    });
-    statsDisplay.appendChild(poolingToggle);
-
-    // Position the stats display after the pane is fully initialized
-    setTimeout(() => {
-        statsDisplay.style.right = `${pane.element.offsetWidth + 20}px`;
-    }, 100);
-
-    // Update stats display less frequently
-    let updateCounter = 0;
-    app.ticker.add(() => {
-        updateCounter++;
-
-        // Only update every 10 frames (about 6 times per second at 60fps)
-        if (updateCounter % 50 === 0) {
-        statsDisplay.innerHTML = `
-            FPS: ${Bench.fps.toFixed(1)}<br>
-            AVG: ${Bench.fpsAvg}<br>
-            MEM: ${Bench.memMB} MB<br>
-            Active: ${GlobalParticlePool.stats.active}<br>
-            Free: ${GlobalParticlePool.stats.free}
-        `;
-        statsDisplay.appendChild(poolingToggle);
-        }
-    });
-
-    // Create a folder for the reset button
-    const resetFolder = pane.addFolder({
-        title: 'Reset Options',
-        expanded: false,
-    });
-
-    // Add the button to the folder
-    const resetBtn = resetFolder.addButton({
-        title: 'Reset to Defaults',
-    });
-
-    resetBtn.on('click', () => {
-        resetSettings();
-        pane.refresh();
-    });
-
+    if (DEBUG_MODE) {
+        const pane = createDebugPanel();
+        const statsDisplay = createStatsDisplay(pane.element.offsetWidth, app.ticker);
+        document.body.appendChild(statsDisplay);
+    }
 })();
