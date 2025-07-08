@@ -1,15 +1,15 @@
-import { Container, Texture } from 'pixi.js';
+import { Container } from 'pixi.js';
 import type { FireworkConfig } from '../core/xmlLoader';
-import { createFirework } from '../fireworks';
+import { createFirework, type TextureSet } from '../fireworks';
 
 export class Scheduler {
     private elapsed = 0;                    // ms since show start
     private configs: FireworkConfig[];
     private root: Container;
     private launched = new Set<FireworkConfig>();
-    private textures: Record<string, Texture>;
+    private textures: TextureSet;
 
-    constructor(configs: FireworkConfig[], root: Container, textures: Record<string, Texture>) {
+    constructor(configs: FireworkConfig[], root: Container, textures: TextureSet) {
         this.configs = configs;
         this.root = root;
         this.textures = textures;

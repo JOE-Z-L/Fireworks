@@ -1,14 +1,50 @@
-import { Application, Text , Assets } from "pixi.js";
+import { Application, Text, Assets, Texture } from "pixi.js";
 import { loadFireWorkConfigs } from "./core/xmlLoader";
 import { ENV } from "./config/env";
 import {createCoordinatesRoot} from "./core/coordinatesSystem";
 import { Scheduler } from "./core/scheduler";
+import type { TextureSet } from "./fireworks";
 
-const textures = await Assets.load({
-    particle : '/assets/particle.png',
-    rocket   : '/assets/rocket.png',
-    fountain : '/assets/fountain.png',
-});
+// Try a different approach to asset loading
+let textures;
+try {
+  // Create empty textures first
+  textures = {
+    particle: Texture.WHITE,
+    rocket: Texture.WHITE,
+    fountain: Texture.WHITE
+  };
+
+  // Check if assets exist before trying to load them
+  const assetsExist = await Promise.all([
+    fetch('/assets/particle.png').then(r => r.ok).catch(() => false),
+    fetch('/assets/rocket.png').then(r => r.ok).catch(() => false),
+    fetch('/assets/fountain.png').then(r => r.ok).catch(() => false)
+  ]);
+
+  if (assetsExist.every(exists => exists)) {
+    // All assets exist, try to load them with PIXI
+    try {
+      const loadedTextures = await Assets.load({
+        particle: '/assets/particle.png',
+        rocket: '/assets/rocket.png',
+        fountain: '/assets/fountain.png',
+      });
+      
+      textures = loadedTextures;
+      console.log('Successfully loaded all textures');
+    } catch (loadError) {
+      console.warn('PIXI asset loading failed, using fallbacks', loadError);
+    }
+  } else {
+    console.warn('Some assets do not exist, using fallbacks');
+  }
+  
+  console.log('Using textures:', textures);
+} catch (error) {
+  console.error('Error in texture loading process:', error);
+  // Already have fallback textures
+}
 
 (async () => {
     const app = new Application();
@@ -49,8 +85,14 @@ const textures = await Assets.load({
 
         app.stage.removeChild(message);
 
+        // Create TextureSet from loaded textures
+        const textureSet: TextureSet = {
+            particle: textures.particle,
+            rocket: textures.rocket
+        };
+
         // Initialize scheduler and start animation
-        const scheduler = new Scheduler(cfgs, world, textures);
+        const scheduler = new Scheduler(cfgs, world, textureSet);
         app.ticker.add(({ deltaMS }) => scheduler.update(deltaMS));
     } catch (error) {
         console.error('Failed to load fireworks:', error);
