@@ -7,7 +7,6 @@ import type { TextureSet } from "./fireworks";
 import { Settings } from "./config/runtimeSettings";
 import { enableResponsiveCanvas } from "./core/canvasResize";
 import {  initBench } from "./core/benchmark";
-import { createDebugToggle } from "./components/DebugToggle";
 import { createStatsDisplay } from "./components/StatsDisplay";
 import { createDebugPanel } from "./components/DebugPanel";
 
@@ -35,7 +34,7 @@ try {
 
   Promise.all([
     loadTexture('/assets/particle.png'),
-    loadTexture('/assets1/rocket.png'),
+    loadTexture('/assets/rocket.png'),
     loadTexture('/assets/fountain.png')
   ]).then(([particleTex, rocketTex, fountainTex]) => {
     textures = {
@@ -61,8 +60,6 @@ function getQueryParam(param: string, value: string): boolean {
 const DEBUG_MODE = getQueryParam('mode', 'debug');
 
 (async () => {
-    document.body.appendChild(createDebugToggle(DEBUG_MODE));
-
     const app = new Application();
     await app.init({
         width: ENV.DISPLAY.WIDTH,

@@ -32,7 +32,7 @@ export function enableResponsiveCanvas(
       top:  `${(H - cssH) / 2}px`,
       width: `${cssW}px`,
       height: `${cssH}px`,
-      background: '#000',      // bars colour
+      background: '#000',
     });
 
     viewport.position.set(logicalWidth / 2, logicalHeight / 2);

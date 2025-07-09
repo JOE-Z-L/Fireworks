@@ -1,4 +1,3 @@
-// src/particles/ParticlePool.ts
 import { Particle } from './Particule';
 import type { Texture } from 'pixi.js';
 
@@ -18,7 +17,7 @@ export class ParticlePool {
         const b = this.bucket(tex, tint);
         const p = b.free.pop() ?? new Particle(tex, tint, 0);
         b.active++;
-        p.pooled = false;    // mark as checked-out
+        p.pooled = false;
         return p;
     }
 

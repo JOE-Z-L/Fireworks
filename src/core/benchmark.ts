@@ -4,7 +4,7 @@ export const Bench = {
     fps: 0,
     fpsAvg: 0,
     memMB: 'n/a',
-    pooling: true,      // toggle later
+    pooling: true,
 };
 
 export function initBench(ticker: Ticker) {
