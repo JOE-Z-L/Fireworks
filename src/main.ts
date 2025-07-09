@@ -8,7 +8,7 @@ import { Settings } from "./config/runtimeSettings";
 import { enableResponsiveCanvas } from "./core/canvasResize";
 import {  initBench } from "./core/benchmark";
 import { createStatsDisplay } from "./components/StatsDisplay";
-import { createDebugPanel } from "./components/DebugPanel";
+import { createDebugPanel, getAssetPath } from "./components/DebugPanel";
 
 let textures = {
     particle: Texture.WHITE,
@@ -33,9 +33,9 @@ try {
   };
 
   Promise.all([
-    loadTexture('/assets/particle.png'),
-    loadTexture('/assets/rocket.png'),
-    loadTexture('/assets/fountain.png')
+    loadTexture(getAssetPath('particle.png')),
+    loadTexture(getAssetPath('rocket.png')),
+    loadTexture(getAssetPath('fountain.png'))
   ]).then(([particleTex, rocketTex, fountainTex]) => {
     textures = {
       particle: particleTex,
@@ -58,6 +58,14 @@ function getQueryParam(param: string, value: string): boolean {
 }
 
 const DEBUG_MODE = getQueryParam('mode', 'debug');
+const ALT_MODE = getQueryParam('mode', 'alt');
+
+if (ALT_MODE) {
+  localStorage.setItem('useAltAssets', 'true');
+} else if (DEBUG_MODE) {
+} else {
+  localStorage.setItem('useAltAssets', 'false');
+}
 
 (async () => {
     const app = new Application();

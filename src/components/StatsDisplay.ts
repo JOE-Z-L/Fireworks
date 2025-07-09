@@ -9,7 +9,6 @@ import { GlobalParticlePool } from '../particules/ParticlePool';
  * @returns The created stats display element
  */
 export function createStatsDisplay(paneWidth: number, ticker: Ticker): HTMLDivElement {
-    // Create the stats display container
     const statsDisplay = document.createElement('div');
     statsDisplay.id = 'stats-display';
     statsDisplay.style.cssText = `
@@ -26,24 +25,17 @@ export function createStatsDisplay(paneWidth: number, ticker: Ticker): HTMLDivEl
         z-index: 1000;
     `;
     
-    // Create pooling toggle
     const poolingToggle = document.createElement('div');
     poolingToggle.innerHTML = `<label><input type="checkbox" ${Bench.pooling ? 'checked' : ''}/> Use Pool</label>`;
     poolingToggle.style.marginTop = '8px';
     poolingToggle.querySelector('input')?.addEventListener('change', (e) => {
         Bench.pooling = (e.target as HTMLInputElement).checked;
-        
-        // Completely reset the pool when toggling pooling
         GlobalParticlePool.reset();
     });
     statsDisplay.appendChild(poolingToggle);
-    
-    // Update stats display less frequently
     let updateCounter = 0;
     ticker.add(() => {
         updateCounter++;
-        
-        // Only update every 50 frames
         if (updateCounter % 50 === 0) {
             statsDisplay.innerHTML = `
                 FPS: ${Bench.fps.toFixed(1)}<br>
@@ -56,7 +48,6 @@ export function createStatsDisplay(paneWidth: number, ticker: Ticker): HTMLDivEl
         }
     });
     
-    // Adjust position after pane is fully initialized
     setTimeout(() => {
         statsDisplay.style.right = `${paneWidth + 20}px`;
     }, 100);
