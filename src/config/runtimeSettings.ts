@@ -1,5 +1,5 @@
 const DEFAULT_SETTINGS = {
-    rocketScale: 2.50,          // Size of rocket body
+    rocketScale: 2.30,          // Size of rocket body
     rocketSparkScale: 1.4,    // Size of rocket explosion particles
     fountainSparkScale: 0.8,  // Size of fountain particles
     trailScale: 1.2,          // Size of rocket trail particles
@@ -14,10 +14,28 @@ const DEFAULT_SETTINGS = {
     explosionParticles: 80,    // Number of particles in explosion
 };
 
+// Alternative settings for alt mode
+const ALT_SETTINGS = {
+    rocketScale: 2.50,
+    rocketSparkScale: 1.8,
+    fountainSparkScale: 2.4,
+    trailScale: 1.5,
+    fountainSpeed: 350,
+    fountainSpread: 150,
+    fountainLife: 1150,
+    explosionSpeed: 500,
+    gravity: -150,
+    emitInterval: 1.5,
+    viewportZoom: 0.8,
+    explosionJitter: 1.5,
+    explosionParticles: 120,
+};
+
 export const Settings = {
     ...DEFAULT_SETTINGS
 };
-
 export function resetSettings() {
-    Object.assign(Settings, DEFAULT_SETTINGS);
+    const isAltMode = new URLSearchParams(window.location.search).get('mode') === 'alt';
+    Object.assign(Settings, isAltMode ? ALT_SETTINGS : DEFAULT_SETTINGS);
 }
+resetSettings();
