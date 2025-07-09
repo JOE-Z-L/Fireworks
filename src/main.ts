@@ -8,14 +8,9 @@ import { Settings } from "./config/runtimeSettings";
 import { enableResponsiveCanvas } from "./core/canvasResize";
 import {  initBench } from "./core/benchmark";
 import { createStatsDisplay } from "./components/StatsDisplay";
-import { createDebugPanel, getAssetPath } from "./components/DebugPanel";
+import { createDebugPanel, getAssetPath, AssetSettings } from "./components/DebugPanel";
 
-let textures = {
-    particle: Texture.WHITE,
-    rocket: Texture.WHITE,
-    fountain: Texture.WHITE
-  };
-
+const loadTextures = async (): Promise<TextureSet> => {
 try {
   const loadTexture = (url: string): Promise<Texture> => {
     return new Promise((resolve, reject) => {
@@ -32,25 +27,27 @@ try {
     });
   };
 
-  Promise.all([
+    const [particleTex, rocketTex, fountainTex] = await Promise.all([
     loadTexture(getAssetPath('particle.png')),
     loadTexture(getAssetPath('rocket.png')),
     loadTexture(getAssetPath('fountain.png'))
-  ]).then(([particleTex, rocketTex, fountainTex]) => {
-    textures = {
+    ]);
+
+    console.log('Successfully loaded all textures');
+    return {
       particle: particleTex,
       rocket: rocketTex,
       fountain: fountainTex
     };
-    console.log('Successfully loaded all textures manually');
-  }).catch(err => {
-    console.warn('Manual texture loading failed, using fallbacks', err);
-  });
-  
-  console.log('Using textures:', textures);
 } catch (error) {
   console.error('Error in texture loading process:', error);
+    return {
+      particle: Texture.WHITE,
+      rocket: Texture.WHITE,
+      fountain: Texture.WHITE
+    };
 }
+};
 
 function getQueryParam(param: string, value: string): boolean {
   const urlParams = new URLSearchParams(window.location.search);
@@ -62,9 +59,10 @@ const ALT_MODE = getQueryParam('mode', 'alt');
 
 if (ALT_MODE) {
   localStorage.setItem('useAltAssets', 'true');
-} else if (DEBUG_MODE) {
-} else {
-  localStorage.setItem('useAltAssets', 'false');
+  AssetSettings.useAltAssets = true;
+} else if (!DEBUG_MODE) {
+  localStorage.removeItem('useAltAssets');
+  AssetSettings.useAltAssets = false;
 }
 
 (async () => {
@@ -78,12 +76,10 @@ if (ALT_MODE) {
 
     initBench(app.ticker);
 
-    console.log('textures loaded', textures);
-
     document.getElementById('fw-container')?.appendChild(app.canvas);
 
     const message = new Text({
-        text: 'fireworks Display\nLoading...',
+        text: 'Fireworks Display\nLoading...',
         style: {
             fontFamily: 'Arial',
             fontSize: 36,
@@ -96,28 +92,25 @@ if (ALT_MODE) {
     message.position.set(app.screen.width / 2, app.screen.height / 2);
     app.stage.addChild(message);
 
-    console.log('fireworks application initialized');
+    console.log('Fireworks application initialized, loading textures...');
+
+    // Load textures first, then initialize the rest
+    const textureSet = await loadTextures();
+    console.log('Textures loaded:', textureSet);
 
     try {
         const screen = createCoordinatesRoot(app.screen.width, app.screen.height);
         screen.scale.set(Settings.viewportZoom, -Settings.viewportZoom);
         app.stage.addChild(screen);
 
-        const logicalW = ENV.DISPLAY.WIDTH;   // 1024
-        const logicalH = ENV.DISPLAY.HEIGHT;  // 768
+        const logicalW = ENV.DISPLAY.WIDTH;
+        const logicalH = ENV.DISPLAY.HEIGHT;
         enableResponsiveCanvas(app, screen, logicalW, logicalH);
 
         const cfgs = await loadFireWorkConfigs(ENV.ASSETS.FIREWORKS_XML);
         console.table(cfgs);
 
         app.stage.removeChild(message);
-
-        // Create TextureSet from loaded textures
-        const textureSet: TextureSet = {
-            particle: textures.particle,
-            rocket: textures.rocket,
-            fountain: textures.fountain
-        };
 
         const scheduler = new Scheduler(cfgs, screen, textureSet);
 

@@ -1,7 +1,7 @@
 import { Pane } from "tweakpane";
 import { Settings, resetSettings } from "../config/runtimeSettings";
 
-const AssetSettings = {
+export const AssetSettings = {
     useAltAssets: localStorage.getItem('useAltAssets') === 'true' || false
 };
 
