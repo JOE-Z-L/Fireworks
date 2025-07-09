@@ -14,7 +14,6 @@ export function initBench(ticker: Ticker) {
         Bench.fps = ticker.FPS;
         acc += Bench.fps; frames++;
 
-        // once a second → rolling average & memory
         if (ticker.lastTime % 1000 < 16) {
             Bench.fpsAvg = +(acc / frames).toFixed(1);
             acc = frames = 0;

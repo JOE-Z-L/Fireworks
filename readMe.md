@@ -33,12 +33,16 @@ When debug mode is enabled, you'll have access to:
 - Performance statistics (FPS, memory usage, particle counts)
 - Particle pooling toggle
 
-### CI/CD
-This project includes a GitHub Actions workflow that:
-- Tests on Node.js 18, 20, and 22
-- Runs linting, testing, and builds
-- Uploads build artifacts
-- Supports preview deployments for pull requests
+### Alternative Mode
+The application also supports an alternative visual mode that can be enabled by adding `?mode=alt` to the URL:
+```
+http://localhost:8080/?mode=alt
+```
+
+When alt mode is enabled:
+- Alternative textures are loaded from the `/assets_alt/` directory
+- Different firework parameters are applied (more particles, different sizes, etc.)
+
 
 ### Technology Stack
 - **TypeScript** - Type-safe JavaScript
@@ -46,3 +50,39 @@ This project includes a GitHub Actions workflow that:
 - **PIXI.js** - 2D WebGL renderer
 - **Vitest** - Fast unit testing framework
 - **ESLint + Prettier** - Code linting and formatting
+
+### Running Independently
+
+To run the application independently:
+
+1. Build the project:
+```bash
+npm run build
+```
+
+2. The build output will be in the `dist` directory. You can serve these files with any web server.
+
+3. For a simple local server, you can use:
+   - Python: `python -m http.server -d dist 8080`
+   - Node.js: `npx serve dist`
+   - Or any other static file server
+
+### Creating a Distribution Package
+
+To create a zip file for distribution:
+
+1. Build the project:
+```bash
+npm run build
+```
+
+2. Zip the contents of the `dist` directory:
+```bash
+# On Linux/macOS
+cd dist && zip -r ../fireworks.zip .
+
+# On Windows (PowerShell)
+Compress-Archive -Path dist\* -DestinationPath fireworks.zip
+```
+
+3. The resulting `fireworks.zip` file can be deployed to any web server by extracting its contents to the server's root directory.
