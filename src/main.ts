@@ -94,9 +94,30 @@ if (ALT_MODE) {
 
     console.log('Fireworks application initialized, loading textures...');
 
-    // Load textures first, then initialize the rest
-    const textureSet = await loadTextures();
+    let textureSet;
+    try {
+        textureSet = await loadTextures();
     console.log('Textures loaded:', textureSet);
+    } catch (textureError) {
+        console.error('Error loading textures:', textureError);
+
+        app.stage.removeChild(message);
+
+        const errorText = new Text({
+            text: `⚠️ Asset Loading Error\nFailed to load required textures`,
+            style: {
+                fontFamily: 'Arial',
+                fontSize: 28,
+                fill: 0xff4444,
+                align: 'center',
+            },
+        });
+        errorText.anchor.set(0.5);
+        errorText.position.set(app.screen.width / 2, app.screen.height / 2);
+        app.stage.addChild(errorText);
+
+        return;
+    }
 
     try {
         const screen = createCoordinatesRoot(app.screen.width, app.screen.height);
@@ -107,6 +128,7 @@ if (ALT_MODE) {
         const logicalH = ENV.DISPLAY.HEIGHT;
         enableResponsiveCanvas(app, screen, logicalW, logicalH);
 
+        try {
         const cfgs = await loadFireWorkConfigs(ENV.ASSETS.FIREWORKS_XML);
         console.table(cfgs);
 
@@ -118,11 +140,27 @@ if (ALT_MODE) {
             screen.scale.set(Settings.viewportZoom, -Settings.viewportZoom);
             scheduler.update(deltaMS);
         });
+        } catch (err: any) {
+            console.error('Failed to load fireworks:', err);
+
+            app.stage.removeChild(message);
+
+            const errorText = new Text({
+                text: `⚠️ Error loading XML:\n${err.message}`,
+                style: {
+                    fontFamily: 'Arial',
+                    fontSize: 28,
+                    fill: 0xff4444,
+                    align: 'center',
+                },
+            });
+            errorText.anchor.set(0.5);
+            errorText.position.set(app.screen.width / 2, app.screen.height / 2);
+            app.stage.addChild(errorText);
+        }
     } catch (error) {
         console.error('Failed to load fireworks:', error);
     }
-
-
 
     if (DEBUG_MODE) {
         const pane = createDebugPanel();

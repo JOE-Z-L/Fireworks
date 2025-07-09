@@ -20,14 +20,19 @@ export async function loadFireWorkConfigs(url:string): Promise<FireworkConfig[]>
     });
 
     const dom = new DOMParser().parseFromString(raw, 'application/xml');
-    const parseErr = dom.querySelector('parseererror');
+    const parseErr = dom.querySelector('parsererror');
     if(parseErr) {
         throw new Error(`XML parsing error: ${parseErr.textContent}`);
     }
 
+    // Verify that the root element exists
+    const root = dom.querySelector('FireworkDisplay');
+    if (!root) {
+        throw new Error('Invalid XML: missing <FireworkDisplay> root element');
+    }
+
     const configs:FireworkConfig[] = [];
 
-    // 3. Map <Firework> nodes -> FireworkConfig objects
     Array.from(
       dom.querySelectorAll('FireworkDisplay > Firework')
     ).forEach(node => {
