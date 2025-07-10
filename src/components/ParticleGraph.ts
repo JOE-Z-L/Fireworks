@@ -3,12 +3,11 @@ import { GlobalParticlePool } from '../particules/ParticlePool';
 
 export function createParticleGraph(ticker: Ticker): HTMLCanvasElement {
     const graphCanvas = document.createElement('canvas');
-    graphCanvas.width = 180;
-    graphCanvas.height = 60;
+    graphCanvas.width = 300;
+    graphCanvas.height = 150;
     graphCanvas.style.marginTop = '8px';
     graphCanvas.style.border = '1px solid #333';
     
-    // Particle history data
     const historyLength = 120;
     const activeHistory = new Array(historyLength).fill(0);
     const freeHistory = new Array(historyLength).fill(0);
@@ -22,19 +21,16 @@ export function createParticleGraph(ticker: Ticker): HTMLCanvasElement {
             activeHistory.shift();
             freeHistory.push(GlobalParticlePool.stats.free);
             freeHistory.shift();
-            
-            // Draw graph
+
             const ctx = graphCanvas.getContext('2d');
             if (ctx) {
                 ctx.clearRect(0, 0, graphCanvas.width, graphCanvas.height);
-                
-                // Find max value for scaling
+
                 const maxValue = Math.max(
-                    ...activeHistory, 
+                    ...activeHistory,
                     ...freeHistory
                 ) || 1;
-                
-                // Draw background grid
+
                 ctx.strokeStyle = '#333333';
                 ctx.lineWidth = 0.5;
                 ctx.beginPath();
@@ -45,7 +41,6 @@ export function createParticleGraph(ticker: Ticker): HTMLCanvasElement {
                 }
                 ctx.stroke();
 
-                // Draw free particles (green)
                 ctx.strokeStyle = '#4CAF50';
                 ctx.lineWidth = 1.5;
                 ctx.beginPath();
@@ -57,7 +52,6 @@ export function createParticleGraph(ticker: Ticker): HTMLCanvasElement {
                 });
                 ctx.stroke();
                 
-                // Draw active particles (red)
                 ctx.strokeStyle = '#F44336';
                 ctx.lineWidth = 1.5;
                 ctx.beginPath();
@@ -69,20 +63,14 @@ export function createParticleGraph(ticker: Ticker): HTMLCanvasElement {
                 });
                 ctx.stroke();
 
-                // Add legends
-                ctx.font = '9px Arial';
+                ctx.font = '12px Arial';
 
-                // Free particles legend
                 ctx.fillStyle = '#4CAF50';
-                ctx.fillRect(5, 5, 10, 5);
-                ctx.fillText('Free', 20, 10);
+                ctx.fillText('Free', 30, 10);
 
-                // Active particles legend
                 ctx.fillStyle = '#F44336';
-                ctx.fillRect(60, 5, 10, 5);
                 ctx.fillText('Active', 75, 10);
 
-                // Max value
                 ctx.fillStyle = '#FFFFFF';
                 ctx.textAlign = 'right';
                 ctx.fillText(`Max: ${maxValue}`, graphCanvas.width - 5, 10);

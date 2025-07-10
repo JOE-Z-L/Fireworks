@@ -16,9 +16,9 @@ export const XMLSettings = {
 
 export function getXMLPath():string {
     switch (XMLSettings.currentXML) {
-        case 'large': return 'public/fireworksLargeSet.xml';
-        case 'varied': return 'public/fireworksVariedSet.xml';
-        case 'SaoJoao': return 'public/fireworksSaoJoaoSet.xml';
+        case 'large': return '/fireworksLargeSet.xml';
+        case 'varied': return '/fireworksVariedSet.xml';
+        case 'SaoJoao': return '/fireworksSaoJoaoSet.xml';
         default: return ENV.ASSETS.FIREWORKS_XML;
     }
 }
