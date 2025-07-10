@@ -8,7 +8,7 @@ import { Settings } from "./config/runtimeSettings";
 import { enableResponsiveCanvas } from "./core/canvasResize";
 import {  initBench } from "./core/benchmark";
 import { createStatsDisplay } from "./components/StatsDisplay";
-import { createDebugPanel, getAssetPath, AssetSettings } from "./components/DebugPanel";
+import { createDebugPanel, getAssetPath, AssetSettings, getXMLPath } from "./components/DebugPanel";
 
 const loadTextures = async (): Promise<TextureSet> => {
 try {
@@ -129,7 +129,7 @@ if (ALT_MODE) {
         enableResponsiveCanvas(app, screen, logicalW, logicalH);
 
         try {
-        const cfgs = await loadFireWorkConfigs(ENV.ASSETS.FIREWORKS_XML);
+        const cfgs = await loadFireWorkConfigs(getXMLPath());
         console.table(cfgs);
 
         app.stage.removeChild(message);

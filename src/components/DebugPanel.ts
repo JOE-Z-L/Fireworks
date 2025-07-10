@@ -1,5 +1,6 @@
 import { Pane } from "tweakpane";
 import { Settings, resetSettings } from "../config/runtimeSettings";
+import {ENV} from "../config/env";
 
 export const AssetSettings = {
     useAltAssets: localStorage.getItem('useAltAssets') === 'true' || false
@@ -9,12 +10,42 @@ export function getAssetPath(filename: string): string {
     return AssetSettings.useAltAssets ? `/assets_alt/${filename}` : `/assets/${filename}`;
 }
 
+export const XMLSettings = {
+    currentXML: localStorage.getItem('currentXML') || 'default'
+};
+
+export function getXMLPath():string {
+    switch (XMLSettings.currentXML) {
+        case 'large': return 'public/fireworksLargeSet.xml';
+        case 'varied': return 'public/fireworksVariedSet.xml';
+        case 'SaoJoao': return 'public/fireworksSaoJoaoSet.xml';
+        default: return ENV.ASSETS.FIREWORKS_XML;
+    }
+}
+
 /**
  * Creates the debug panel with all firework controls
  * @returns The created Tweakpane instance
  */
 export function createDebugPanel(): Pane {
     const pane = new Pane({ title: 'Fireworks Debug Panel' });
+
+    const xmlFolder = pane.addFolder({ title: 'XML Configuration' });
+    const xmlOptions = {
+        'Default': 'default',
+        'Large Set': 'large',
+        'Varied Set': 'varied',
+        'SaoJoao': 'SaoJoao'
+    };
+    const xmlController = xmlFolder.addBinding(XMLSettings, 'currentXML', {
+        options: xmlOptions,
+        label: 'XML File'
+    });
+
+    xmlController.on('change', (ev) => {
+        localStorage.setItem('currentXML', ev.value);
+        window.location.reload();
+    });
 
     // Rocket controls panel
     const rocketFolder = pane.addFolder({ title: 'Rocket Settings' });

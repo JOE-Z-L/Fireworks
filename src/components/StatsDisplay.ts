@@ -1,6 +1,7 @@
 import { Ticker } from 'pixi.js';
 import { Bench } from '../core/benchmark';
 import { GlobalParticlePool } from '../particules/ParticlePool';
+import { createParticleGraph } from './ParticleGraph';
 
 /**
  * Creates a statistics display panel
@@ -25,6 +26,9 @@ export function createStatsDisplay(paneWidth: number, ticker: Ticker): HTMLDivEl
         z-index: 1000;
     `;
     
+    // Create particle graph
+    const graphCanvas = createParticleGraph(ticker);
+
     const poolingToggle = document.createElement('div');
     poolingToggle.innerHTML = `<label><input type="checkbox" ${Bench.pooling ? 'checked' : ''}/> Use Pool</label>`;
     poolingToggle.style.marginTop = '8px';
@@ -33,18 +37,27 @@ export function createStatsDisplay(paneWidth: number, ticker: Ticker): HTMLDivEl
         GlobalParticlePool.reset();
     });
     statsDisplay.appendChild(poolingToggle);
+    statsDisplay.appendChild(graphCanvas);
+
     let updateCounter = 0;
     ticker.add(() => {
         updateCounter++;
-        if (updateCounter % 50 === 0) {
-            statsDisplay.innerHTML = `
+        if (updateCounter % 10 === 0) {
+            // Update stats text
+            const statsText = document.createElement('div');
+            statsText.innerHTML = `
                 FPS: ${Bench.fps.toFixed(1)}<br>
                 AVG: ${Bench.fpsAvg}<br>
                 MEM: ${Bench.memMB} MB<br>
                 Active: ${GlobalParticlePool.stats.active}<br>
                 Free: ${GlobalParticlePool.stats.free}
             `;
+
+            // Clear and rebuild the display
+            statsDisplay.innerHTML = '';
+            statsDisplay.appendChild(statsText);
             statsDisplay.appendChild(poolingToggle);
+            statsDisplay.appendChild(graphCanvas);
         }
     });
     

@@ -36,6 +36,7 @@ export const Settings = {
 };
 
 export function resetSettings() {
+    //TODO: if theres no alt mode also set alt mode settings
     const isAltMode = new URLSearchParams(window.location.search).get('mode') === 'alt' || localStorage.getItem('useAltAssets') === 'true';
     Object.assign(Settings, isAltMode ? ALT_SETTINGS : DEFAULT_SETTINGS);
 }
