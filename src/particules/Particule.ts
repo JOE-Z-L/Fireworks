@@ -15,27 +15,24 @@ export class Particle extends Sprite {
         this.ax = ax;
         this.ay = ay;
         this.life = life;
-        this.anchor.set(0.5);     // rotate/scale around centre
+        this.anchor.set(0.5);
     }
 
     update(dt: number): void {
         const dtSec = dt / 1000;
 
-        // integrate acceleration → velocity
         this.vx += this.ax * dtSec;
         this.vy += this.ay * dtSec;
 
-        // integrate velocity → position
         this.x += this.vx * dtSec;
         this.y += this.vy * dtSec;
         this.life -= dt;
 
-        // Simple alpha fade
-        this.alpha = Math.max(this.life / 1000, 0);  // fades over last second
+        this.alpha = Math.max(this.life / 1000, 0);
     }
 
     reset(life: number, x: number, y: number, vx: number, vy: number) {
-        this.pooled = false;    // mark as active
+        this.pooled = false;
         this.life = life;
         this.x = x; this.y = y;
         this.vx = vx; this.vy = vy;

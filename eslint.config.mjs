@@ -11,12 +11,10 @@ export default [
       ecmaVersion: "latest",
       sourceType: "module",
     },
-    // Include js.configs.recommended rules directly instead of using extends
     rules: {
       ...js.configs.recommended.rules,
       ...prettier.rules,
     },
-    // Include prettier plugin
     plugins: {
       prettier: prettier.plugins?.prettier,
     },

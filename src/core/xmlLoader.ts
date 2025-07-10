@@ -25,7 +25,6 @@ export async function loadFireWorkConfigs(url:string): Promise<FireworkConfig[]>
         throw new Error(`XML parsing error: ${parseErr.textContent}`);
     }
 
-    // Verify that the root element exists
     const root = dom.querySelector('FireworkDisplay');
     if (!root) {
         throw new Error('Invalid XML: missing <FireworkDisplay> root element');
@@ -43,7 +42,6 @@ export async function loadFireWorkConfigs(url:string): Promise<FireworkConfig[]>
     configs.sort((a, b) => a.begin - b.begin);
     return configs;
 
-// Helpers
     function readFirework(node: Element): FireworkConfig {
         const begin     = mustIntAttr(node, 'begin');
         const typeStr   = mustAttr(node, 'type')      as 'Fountain' | 'Rocket';

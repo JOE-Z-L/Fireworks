@@ -1,12 +1,6 @@
 import type { Application, Container } from 'pixi.js';
 
 /**
- * Sets up a resize listener that:
- *  • keeps a constant logical resolution (w×h),
- *  • scales the PIXI canvas with correct aspect ratio,
- *  • re-centres the viewport container,
- *  • returns a function to remove the listener (for tests / hot-reload).
- *
  * @param app     The PIXI Application
  * @param viewport   The root container in createCoordinatesRoot()
  * @param logicalWidth  e.g. 1024
