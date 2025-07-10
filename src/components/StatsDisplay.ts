@@ -29,6 +29,7 @@ export function createStatsDisplay(paneWidth: number, ticker: Ticker): HTMLDivEl
     // Create particle graph
     const graphCanvas = createParticleGraph(ticker);
 
+    // Create pooling toggle once
     const poolingToggle = document.createElement('div');
     poolingToggle.innerHTML = `<label><input type="checkbox" ${Bench.pooling ? 'checked' : ''}/> Use Pool</label>`;
     poolingToggle.style.marginTop = '8px';
@@ -36,6 +37,12 @@ export function createStatsDisplay(paneWidth: number, ticker: Ticker): HTMLDivEl
         Bench.pooling = (e.target as HTMLInputElement).checked;
         GlobalParticlePool.reset();
     });
+
+    // Create stats text container
+    const statsText = document.createElement('div');
+
+    // Initial structure
+    statsDisplay.appendChild(statsText);
     statsDisplay.appendChild(poolingToggle);
     statsDisplay.appendChild(graphCanvas);
 
@@ -43,8 +50,7 @@ export function createStatsDisplay(paneWidth: number, ticker: Ticker): HTMLDivEl
     ticker.add(() => {
         updateCounter++;
         if (updateCounter % 10 === 0) {
-            // Update stats text
-            const statsText = document.createElement('div');
+            // Update only the stats text content
             statsText.innerHTML = `
                 FPS: ${Bench.fps.toFixed(1)}<br>
                 AVG: ${Bench.fpsAvg}<br>
@@ -52,12 +58,6 @@ export function createStatsDisplay(paneWidth: number, ticker: Ticker): HTMLDivEl
                 Active: ${GlobalParticlePool.stats.active}<br>
                 Free: ${GlobalParticlePool.stats.free}
             `;
-
-            // Clear and rebuild the display
-            statsDisplay.innerHTML = '';
-            statsDisplay.appendChild(statsText);
-            statsDisplay.appendChild(poolingToggle);
-            statsDisplay.appendChild(graphCanvas);
         }
     });
     

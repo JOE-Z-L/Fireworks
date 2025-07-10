@@ -22,11 +22,15 @@ export class ParticlePool {
     }
 
     release(p: Particle) {
-      if(p.pooled) return;
-      p.pooled = true;
-      const b = this.bucket(p.texture, p.tint);
-      b.active = Math.max(0,b.active - 1);
-      b.free.push(p);
+        if (!p.pooled) {
+            p.pooled = true;
+        const b = this.bucket(p.texture, p.tint);
+            if (b.active > 0) {
+        b.active--;
+            } else {
+                b.free.push(p);
+            }
+    }
     }
 
     get stats() {
