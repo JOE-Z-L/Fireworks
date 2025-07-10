@@ -18,7 +18,7 @@ export function getXMLPath():string {
     switch (XMLSettings.currentXML) {
         case 'large': return '/fireworksLargeSet.xml';
         case 'varied': return '/fireworksVariedSet.xml';
-        case 'SaoJoao': return '/fireworksSaoJoaoSet.xml';
+        case 'extreme': return '/fireworksSaoJoaoSet.xml';
         default: return ENV.ASSETS.FIREWORKS_XML;
     }
 }
@@ -35,7 +35,7 @@ export function createDebugPanel(): Pane {
         'Default': 'default',
         'Large Set': 'large',
         'Varied Set': 'varied',
-        'SaoJoao': 'SaoJoao'
+        'Extreme(Caution)': 'extreme'
     };
     const xmlController = xmlFolder.addBinding(XMLSettings, 'currentXML', {
         options: xmlOptions,
