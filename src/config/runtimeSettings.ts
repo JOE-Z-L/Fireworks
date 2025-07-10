@@ -14,7 +14,7 @@ const DEFAULT_SETTINGS = {
     explosionParticles: 80,    // Number of particles in explosion
 };
 
-// Alternative settings for alt mode
+//  Settings for alt mode
 const ALT_SETTINGS = {
     rocketScale: 2.50,
     rocketSparkScale: 1.8,
@@ -34,8 +34,9 @@ const ALT_SETTINGS = {
 export const Settings = {
     ...DEFAULT_SETTINGS
 };
+
 export function resetSettings() {
-    const isAltMode = new URLSearchParams(window.location.search).get('mode') === 'alt';
+    const isAltMode = new URLSearchParams(window.location.search).get('mode') === 'alt' || localStorage.getItem('useAltAssets') === 'true';
     Object.assign(Settings, isAltMode ? ALT_SETTINGS : DEFAULT_SETTINGS);
 }
 resetSettings();
