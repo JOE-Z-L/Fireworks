@@ -20,10 +20,14 @@ To view the project:
 4. The build output will be in the `dist` directory. You can serve these files with any web server:
    ```bash
    # Using Node.js serve
-   npx serve dist
+   npx serve dist    # If you're in the project root
+   # OR
+   npx serve         # If you're already in the dist directory
    
    # Or using Python
-   python -m http.server -d dist 8080
+   python -m http.server -d dist 8080    # If you're in the project root
+   # OR
+   python -m http.server 8080            # If you're already in the dist directory
    ```
 5. Open your browser and navigate to http://localhost:8080
 
