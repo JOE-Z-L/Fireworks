@@ -73,7 +73,7 @@ export class RocketFirework extends Firework {
             p = GlobalParticlePool.get(this.sparkTex, this.cfg.colour);
         } else {
             p = new Particle(this.sparkTex, this.cfg.colour, 0);
-            p.pooled = false; // Ensure it's marked as not pooled
+            p.pooled = false;
         }
 
         p.reset(life, 0, 0, vx, vy);
@@ -101,7 +101,7 @@ export class RocketFirework extends Firework {
         for (let i = 0; i < particleCount; i++) {
             const angle = (i / particleCount) * Math.PI * 2;
 
-            // Add jitter to velocity for scattered "shotgun" effect"
+            // this adds "jitter" to velocity for scattered "shotgun" effect", so the explosion is not a circle
             const jitter = 1 - (Math.random() * Settings.explosionJitter);
             const vx = Math.cos(angle) * Settings.explosionSpeed * jitter;
             const vy = Math.sin(angle) * Settings.explosionSpeed * jitter;

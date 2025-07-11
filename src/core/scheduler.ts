@@ -3,7 +3,7 @@ import  { FireworkConfig } from '../core/xmlLoader';
 import { createFirework, TextureSet } from '../fireworks';
 
 export class Scheduler {
-    private elapsed = 0;                    // ms since show start
+    private elapsed = 0;
     private configs: FireworkConfig[];
     private root: Container;
     private launched = new Set<FireworkConfig>();

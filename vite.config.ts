@@ -6,16 +6,4 @@ export default defineConfig({
     port: 8080,
     open: true,
   },
-  test: {
-    environment: "jsdom",
-    globals: true,
-    coverage: {
-      reporter: ['text', 'json', 'html'],
-      exclude: [
-        'node_modules/',
-        'src/__tests__/',
-        'dist/',
-      ],
-    },
-  },
 });

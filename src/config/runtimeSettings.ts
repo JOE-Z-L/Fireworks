@@ -14,7 +14,6 @@ const DEFAULT_SETTINGS = {
     explosionParticles: 80,    // Number of particles in explosion
 };
 
-//  Settings for alt mode
 const ALT_SETTINGS = {
     rocketScale: 2.50,
     rocketSparkScale: 1.8,

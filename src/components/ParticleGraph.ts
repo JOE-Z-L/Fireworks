@@ -16,7 +16,6 @@ export function createParticleGraph(ticker: Ticker): HTMLCanvasElement {
     ticker.add(() => {
         updateCounter++;
         if (updateCounter % 10 === 0) {
-            // Update history data
             activeHistory.push(GlobalParticlePool.stats.active);
             activeHistory.shift();
             freeHistory.push(GlobalParticlePool.stats.free);
