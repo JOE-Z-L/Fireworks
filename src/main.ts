@@ -4,7 +4,7 @@ import { ENV } from "./config/env";
 import {createCoordinatesRoot} from "./core/coordinatesSystem";
 import { Scheduler } from "./core/scheduler";
 import type { TextureSet } from "./fireworks";
-import { Settings } from "./config/runtimeSettings";
+import {resetSettings, Settings} from "./config/runtimeSettings";
 import { enableResponsiveCanvas } from "./core/canvasResize";
 import {  initBench } from "./core/benchmark";
 import { createStatsDisplay } from "./components/StatsDisplay";
@@ -64,6 +64,8 @@ if (ALT_MODE) {
   localStorage.removeItem('useAltAssets');
   AssetSettings.useAltAssets = false;
 }
+
+resetSettings();
 
 (async () => {
     const app = new Application();

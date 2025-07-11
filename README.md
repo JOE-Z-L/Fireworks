@@ -92,7 +92,7 @@ When alt mode is enabled:
   - Lower gravity (-150 vs. -200)
   - Different zoom level (0.8 vs. 0.9)
 
-The preference is also remembered in `localStorage`, so once activated you will stay in alternative mode until `?mode=alt` is removed or the cache is cleared.
+While the preference is stored in `localStorage` when activated, entering the application without any URL parameters will reset to the default mode and settings.
 
 ## XML Data Format
 

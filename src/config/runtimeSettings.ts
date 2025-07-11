@@ -18,7 +18,7 @@ const DEFAULT_SETTINGS = {
 const ALT_SETTINGS = {
     rocketScale: 2.50,
     rocketSparkScale: 1.8,
-    fountainSparkScale: 2.4,
+    fountainSparkScale: 3.0,
     trailScale: 1.5,
     fountainSpeed: 350,
     fountainSpread: 150,
@@ -36,8 +36,6 @@ export const Settings = {
 };
 
 export function resetSettings() {
-    //TODO: if theres no alt mode also set alt mode settings
     const isAltMode = new URLSearchParams(window.location.search).get('mode') === 'alt' || localStorage.getItem('useAltAssets') === 'true';
     Object.assign(Settings, isAltMode ? ALT_SETTINGS : DEFAULT_SETTINGS);
 }
-resetSettings();

@@ -57,7 +57,7 @@ export function createDebugPanel(): Pane {
 
     // Fountain controls panel
     const fountainFolder = pane.addFolder({ title: 'Fountain Settings' });
-    fountainFolder.addBinding(Settings, 'fountainSparkScale', { min: 0.1, max: 3, step: 0.1, label: 'Fountain Spark ' });
+    fountainFolder.addBinding(Settings, 'fountainSparkScale', { min: 0.1, max: 4, step: 0.1, label: 'Fountain Spark ' });
     fountainFolder.addBinding(Settings, 'fountainSpeed', { min: 100, max: 500, step: 10 , label: 'Fountain Speed' });
     fountainFolder.addBinding(Settings, 'fountainSpread', { min: 20, max: 200, step: 5, label: 'Fountain Spread' });
     fountainFolder.addBinding(Settings, 'fountainLife', { min: 300, max: 2000, step: 50, label: 'Particle Life' });
