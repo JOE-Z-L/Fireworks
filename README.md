@@ -4,20 +4,34 @@ A web-based fireworks simulation that renders dynamic firework displays based on
 
 ## Running the Project
 
-### Viewing the Project
+### Development Mode
 
-To view the project:
+To run the project in development mode :
 
-1. Extract the provided zip file to a directory of your choice
-2. Install dependencies:
+1. Install dependencies:
    ```bash
    npm install
    ```
-3. Build the project:
+
+2. Start the development server:
+   ```bash
+   npm run dev
+   # OR
+   npm start
+   ```
+
+3. Open your browser and navigate to http://localhost:8080
+
+### Viewing the Built Project
+
+To build and view the production version:
+
+1. Build the project:
    ```bash
    npm run build
    ```
-4. The build output will be in the `dist` directory. You can serve these files with any web server:
+
+2. The build output will be in the `dist` directory. You can serve these files with any web server:
    ```bash
    # Using Node.js serve
    npx serve dist    # If you're in the project root
@@ -29,25 +43,8 @@ To view the project:
    # OR
    python -m http.server 8080            # If you're already in the dist directory
    ```
-5. Open your browser and navigate to http://localhost:8080
 
-### Creating a Distribution Package
-
-To create a zip file for distribution:
-
-1. Build the project:
-   ```bash
-   npm run build
-   ```
-2. Zip the contents of the `dist` directory:
-   ```bash
-   # On Linux/macOS
-   cd dist && zip -r ../fireworks.zip .
-   
-   # On Windows (PowerShell)
-   Compress-Archive -Path dist\* -DestinationPath fireworks.zip
-   ```
-3. The resulting `fireworks.zip` file can be deployed to any web server by extracting its contents to the server's root directory.
+3. Open your browser and navigate to http://localhost:8080 (or http://localhost:5000 if using npx serve)
 
 ## Special Modes
 
@@ -115,4 +112,3 @@ The application reads an XML file that defines the firework display. The XML str
 </FireworkDisplay>
 ```
 
-The application supports multiple XML configurations that can be selected in debug mode.
