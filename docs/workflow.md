@@ -1,7 +1,5 @@
 # Fireworks Application Workflow
 
-This document outlines the core workflow of the Fireworks application, showing how data flows through the system from XML configuration to rendered display.
-
 ## Application Flow
 
 The application follows these key steps:
@@ -52,14 +50,3 @@ flowchart TD
 - **Particle System**: Manages particle creation, updates, and pooling
 - **Debug Tools**: Performance monitoring and parameter adjustment
 
-## Debug Mode
-
-Debug mode can be enabled by adding `?mode=debug` to the URL. This provides:
-- Real-time parameter adjustments via TweakPane
-- Performance statistics (FPS, memory usage)
-- Particle count monitoring
-- Particle pooling toggle
-
-## Responsive Design
-
-The application automatically scales to fit the browser window while maintaining the logical coordinate system defined in the XML (1024×768 with origin at center).
