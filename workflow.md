@@ -40,13 +40,13 @@ flowchart TD
     end
 ```
 
-## Key Components
+## Additional Configuration
 
-- **XML Loader**: Parses fireworks.xml to extract configuration data
-- **Scheduler**: Manages timing of firework creation and lifecycle
-- **Firework Types**:
-  - **Fountain**: Emits particles from a fixed position
-  - **Rocket**: Travels along a path before exploding
-- **Particle System**: Manages particle creation, updates, and pooling
-- **Debug Tools**: Performance monitoring and parameter adjustment
+For detailed information about:
+- Debug Mode features (`?mode=debug`)
+- Alternative Mode settings (`?mode=alt`)
+- XML configuration options
+- Runtime settings and parameters
+
+Please refer to the README.md file, which contains comprehensive documentation on these topics.
 

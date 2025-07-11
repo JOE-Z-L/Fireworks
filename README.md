@@ -1,9 +1,57 @@
+# Fireworks Display Application
+
+A web-based fireworks simulation that renders dynamic firework displays based on XML configuration files.
+
+## Running the Project
+
+### Viewing the Project
+
+To view the project:
+
+1. Extract the provided zip file to a directory of your choice
+2. Install dependencies:
+   ```bash
+   npm install
+   ```
+3. Build the project:
+   ```bash
+   npm run build
+   ```
+4. The build output will be in the `dist` directory. You can serve these files with any web server:
+   ```bash
+   # Using Node.js serve
+   npx serve dist
+   
+   # Or using Python
+   python -m http.server -d dist 8080
+   ```
+5. Open your browser and navigate to http://localhost:8080
+
+### Creating a Distribution Package
+
+To create a zip file for distribution:
+
+1. Build the project:
+   ```bash
+   npm run build
+   ```
+2. Zip the contents of the `dist` directory:
+   ```bash
+   # On Linux/macOS
+   cd dist && zip -r ../fireworks.zip .
+   
+   # On Windows (PowerShell)
+   Compress-Archive -Path dist\* -DestinationPath fireworks.zip
+   ```
+3. The resulting `fireworks.zip` file can be deployed to any web server by extracting its contents to the server's root directory.
+
+## Special Modes
+
 ### Debug Mode
 The application supports a debug mode that can be enabled by adding `?mode=debug` to the URL:
 ```
 http://localhost:8080/?mode=debug
 ```
-
 When debug mode is enabled, you'll have access to:
 - **TweakPane UI** for adjusting firework parameters in real-time
 - **Performance statistics** (FPS, memory usage, particle counts)
@@ -46,50 +94,7 @@ When alt mode is enabled:
 
 The preference is also remembered in `localStorage`, so once activated you will stay in alternative mode until `?mode=alt` is removed or the cache is cleared.
 
-## Running the Project
-
-### Viewing the Project
-
-To view the project as specified in the instructions:
-
-1. Clone the repository
-2. Install dependencies:
-   ```bash
-   npm install
-   ```
-3. Build the project:
-   ```bash
-   npm run build
-   ```
-4. The build output will be in the `dist` directory. You can serve these files with any web server:
-   ```bash
-   # Using Node.js serve
-   npx serve dist
-   
-   # Or using Python
-   python -m http.server -d dist 8080
-   ```
-5. Open your browser and navigate to http://localhost:8080
-
-### Creating a Distribution Package
-
-To create a zip file for distribution as required in the instructions:
-
-1. Build the project:
-   ```bash
-   npm run build
-   ```
-2. Zip the contents of the `dist` directory:
-   ```bash
-   # On Linux/macOS
-   cd dist && zip -r ../fireworks.zip .
-   
-   # On Windows (PowerShell)
-   Compress-Archive -Path dist\* -DestinationPath fireworks.zip
-   ```
-3. The resulting `fireworks.zip` file can be deployed to any web server by extracting its contents to the server's root directory.
-
-### XML Data Format
+## XML Data Format
 
 The application reads an XML file that defines the firework display. The XML structure follows the format specified in the instructions:
 
